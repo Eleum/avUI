@@ -57,7 +57,12 @@ function Health:UpdateHealth()
 end
 
 function Health:SetKindaPreciseHealth(frame)
-    if (not frame) or frame:IsForbidden() or not frame.statusText or not frame.optionTable.displayStatusText then
+    if (not frame) 
+    or frame:IsForbidden() 
+    or not frame.statusText 
+    or not frame.optionTable.displayStatusText 
+    or not UnitIsConnected(frame.unit)
+	or UnitIsDeadOrGhost(frame.displayedUnit) then
         return
     end
 
