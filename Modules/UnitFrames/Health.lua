@@ -61,7 +61,9 @@ function Health:SetKindaPreciseHealth(frame)
     or frame:IsForbidden() 
     or not frame.statusText 
     or not frame.optionTable.displayStatusText 
+    or not frame.unit 
     or not UnitIsConnected(frame.unit)
+    or not frame.displayedUnit
 	or UnitIsDeadOrGhost(frame.displayedUnit) then
         return
     end
