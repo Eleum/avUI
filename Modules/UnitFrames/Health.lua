@@ -139,8 +139,8 @@ function Health:SetAbsorbs(frame)
         end
     end
 
-    Health:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbs, isClamped)
     Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)
+    Health:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbs, isClamped)
 
     absorbFrame:SetAlphaFromBoolean(isClamped, 0, 1)
     overlay:SetAlphaFromBoolean(isClamped, 0, 1)
@@ -161,7 +161,7 @@ function Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue, 
         frame.overAbsorbFrame:EnableMouse(false)
         frame.overAbsorbFrame:SetReverseFill(true)
         frame.overAbsorbFrame:SetStatusBarTexture(7539076); -- background health shield texture
-        
+
         local texture = frame.overAbsorbFrame:GetStatusBarTexture();
         texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 2)
 
