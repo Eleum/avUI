@@ -1,4 +1,4 @@
-## Interface: 110100
+## Interface: 120000
 ## Title: avUI
 ## Author: AVikend
 ## Version: 0.1
