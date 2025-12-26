@@ -155,15 +155,13 @@ function Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue, 
 
     if not frame.overAbsorbFrame then
         frame.overAbsorbFrame = CreateFrame("StatusBar", nil, frame.healthBar)
+        frame.overAbsorbFrame:SetAllPoints(frame.healthBar)
+        frame.overAbsorbFrame:SetFrameLevel(frame.healthBar:GetFrameLevel())
         frame.overAbsorbFrame:SetMinMaxValues(0, 1)
         frame.overAbsorbFrame:EnableMouse(false)
-        frame.overAbsorbFrame:SetAllPoints(frame.healthBar)
         frame.overAbsorbFrame:SetReverseFill(true)
-        frame.overAbsorbFrame:SetStatusBarTexture(7539076);
-
-        local level = frame.healthBar:GetFrameLevel()
-        frame.overAbsorbFrame:SetFrameLevel(level)
-
+        frame.overAbsorbFrame:SetStatusBarTexture(7539076); -- background health shield texture
+        
         local texture = frame.overAbsorbFrame:GetStatusBarTexture();
         texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 2)
 
@@ -188,18 +186,17 @@ function Health:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbValue, is
 
     if not frame.overAbsorbOverlay then
         frame.overAbsorbOverlay = CreateFrame("StatusBar", nil, frame.healthBar)
+        frame.overAbsorbOverlay:SetAllPoints(frame.healthBar)
+        frame.overAbsorbOverlay:SetFrameLevel(frame.healthBar:GetFrameLevel())
         frame.overAbsorbOverlay:SetMinMaxValues(0, 1)
         frame.overAbsorbOverlay:EnableMouse(false)
-        frame.overAbsorbOverlay:SetAllPoints(frame.healthBar)
         frame.overAbsorbOverlay:SetReverseFill(true)
-
-        local level = frame.healthBar:GetFrameLevel()
-        frame.overAbsorbOverlay:SetFrameLevel(level)
 
         frame.overAbsorbOverlay:Show()
     end
 
-    frame.overAbsorbOverlay:SetStatusBarTexture(7539079) -- apparently have to set every time because it would not properly stretch?
+     -- apparently have to set every time because it would not properly stretch in StatusBar frames?
+    frame.overAbsorbOverlay:SetStatusBarTexture(7539079) -- diagonal lines health shield texture
     local texture = frame.overAbsorbOverlay:GetStatusBarTexture()
     texture:SetHorizTile(true)
     texture:SetVertTile(true)
