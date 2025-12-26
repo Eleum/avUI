@@ -27,11 +27,11 @@ end
 
 function Health:OnEnable()
     Health:SecureHook("CompactUnitFrame_UpdateHealPrediction", function(frame)
-        -- Health:SetKindaPreciseHealth(frame)
+        Health:SetKindaPreciseHealth(frame)
         Health:SetAbsorbs(frame)
     end)
     Health:SecureHook("CompactUnitFrame_UpdateStatusText", function(frame)
-        -- Health:SetKindaPreciseHealth(frame)
+        Health:SetKindaPreciseHealth(frame)
     end)
 
     Health.frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -60,6 +60,7 @@ end
 
 function Health:SetKindaPreciseHealth(frame)
     if true then
+        -- calc doesn't work on secrets, return
         return
     end
 
@@ -150,28 +151,26 @@ function Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue, 
         return
     end
 
+    local ARTWORK_BASE_LEVEL = -6 -- dispel overlay
+
     if not frame.overAbsorbFrame then
         frame.overAbsorbFrame = CreateFrame("StatusBar", nil, frame.healthBar)
         frame.overAbsorbFrame:SetMinMaxValues(0, 1)
         frame.overAbsorbFrame:EnableMouse(false)
-        frame.overAbsorbFrame:SetPoint("TOPLEFT", frame.healthBar)
-        frame.overAbsorbFrame:SetPoint("BOTTOMRIGHT", frame.healthBar)
+        frame.overAbsorbFrame:SetAllPoints(frame.healthBar)
         frame.overAbsorbFrame:SetReverseFill(true)
-        frame.overAbsorbFrame:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Fill");
+        frame.overAbsorbFrame:SetStatusBarTexture(7539076);
 
         local level = frame.healthBar:GetFrameLevel()
         frame.overAbsorbFrame:SetFrameLevel(level)
+
+        local texture = frame.overAbsorbFrame:GetStatusBarTexture();
+        texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 2)
 
         frame.overAbsorbFrame:Show();
     end
 
     local overAbsorbFrame = frame.overAbsorbFrame
-
-    -- local absorbBarTexture = 7539076
-    -- local texture = absorbFrame:GetTextureFileID() or absorbBarTexture
-    -- if canaccessvalue(texture) then
-    --     frame.overAbsorbFrame:SetStatusBarTexture(texture)
-    -- end
 
     overAbsorbFrame:SetMinMaxValues(0, maxHealth)
     overAbsorbFrame:SetValue(absorbValue)
@@ -185,14 +184,14 @@ function Health:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbValue, is
         return
     end
 
+    local ARTWORK_BASE_LEVEL = -6 -- dispel overlay
+
     if not frame.overAbsorbOverlay then
         frame.overAbsorbOverlay = CreateFrame("StatusBar", nil, frame.healthBar)
         frame.overAbsorbOverlay:SetMinMaxValues(0, 1)
         frame.overAbsorbOverlay:EnableMouse(false)
-        frame.overAbsorbOverlay:SetPoint("TOPLEFT", frame.healthBar)
-        frame.overAbsorbOverlay:SetPoint("BOTTOMRIGHT", frame.healthBar)
+        frame.overAbsorbOverlay:SetAllPoints(frame.healthBar)
         frame.overAbsorbOverlay:SetReverseFill(true)
-        frame.overAbsorbOverlay.tileSize = 32;
 
         local level = frame.healthBar:GetFrameLevel()
         frame.overAbsorbOverlay:SetFrameLevel(level)
@@ -200,13 +199,13 @@ function Health:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbValue, is
         frame.overAbsorbOverlay:Show()
     end
 
+    frame.overAbsorbOverlay:SetStatusBarTexture(7539079) -- apparently have to set every time because it would not properly stretch?
+    local texture = frame.overAbsorbOverlay:GetStatusBarTexture()
+    texture:SetHorizTile(true)
+    texture:SetVertTile(true)
+    texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 1)
+
     local overAbsorbOverlay = frame.overAbsorbOverlay
-
-    frame.overAbsorbOverlay:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Overlay")
-
-    local overAbsorbFrameTex = frame.overAbsorbOverlay:GetStatusBarTexture()
-    overAbsorbFrameTex:SetHorizTile(true)
-    overAbsorbFrameTex:SetVertTile(true)
 
     overAbsorbOverlay:SetMinMaxValues(0, maxHealth)
     overAbsorbOverlay:SetValue(absorbValue)
