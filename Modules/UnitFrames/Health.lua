@@ -94,22 +94,12 @@ function Health:SetAbsorbs(frame)
     local overlay = frame.totalAbsorbOverlay -- absorb lines texture
     local glow = frame.overAbsorbGlow
 
-    if absorbFrame then
-        -- absorbFrame:Hide()
-    end
-    if overlay then
-        -- overlay:Hide()
-    end
-    if glow then
-        -- glow:Hide()
-    end
-
     local unit = frame.unit;
     local maxHealth = UnitHealthMax(unit)
     local absorbs = UnitGetTotalAbsorbs(unit)
     local healthLevel = frame.healthBar:GetFrameLevel()
 
-    -- Use the calculator API for ATTACHED mode
+    -- Use the calculator API
     local attachedAbsorbs = absorbs
     local isClamped = false
 
@@ -137,6 +127,13 @@ function Health:SetAbsorbs(frame)
             -- attachedAbsorbs = result1
             isClamped = result2 -- This is a secret bool in M+
         end
+
+        -- local getSuccessA, result1A = pcall(function()
+        --     return calc:GetPredictedValues()
+        -- end)
+        -- if getSuccessA then
+        --     DevTool:AddData(result1A, "values")
+        -- end
     end
 
     Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)

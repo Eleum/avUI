@@ -2,7 +2,7 @@
 ## Title: avUI
 ## Author: AVikend
 ## Version: 0.1
-## Notes: Missing features I didn't find a way to do with WAs
+## Notes: Extra features done for the Blizzard default UI
 ## IconTexture: Interface\AddOns\avUI\Media\Logo.png
 
 ## Category-enUS: User Interface
