@@ -19,4 +19,5 @@ avUI.lua
 ## Modules
 Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
+Modules\UnitFrames\Defensives.lua
 Modules\UnitFrames\Health.lua
