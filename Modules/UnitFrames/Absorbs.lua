@@ -23,6 +23,8 @@ function Absorbs:SetAbsorbs(frame)
         return
     end
 
+    -- credits to DandersFrames for the logic below
+
     local absorbFrame = frame.totalAbsorb -- absorb background
     local absorbOverlay = frame.totalAbsorbOverlay -- absorb lines texture
 
@@ -68,11 +70,8 @@ function Absorbs:SetAbsorbs(frame)
         -- end
     end
 
-    Health:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)
-    Health:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbs, isClamped)
-
-    absorbFrame:SetAlphaFromBoolean(isClamped, 0, 1)
-    absorbOverlay:SetAlphaFromBoolean(isClamped, 0, 1)
+    Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)
+    Absorbs:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbs, isClamped)
 end
 
 function Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue, isClamped)
@@ -102,12 +101,13 @@ function Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue,
     overAbsorbFrame:SetMinMaxValues(0, maxHealth)
     overAbsorbFrame:SetValue(absorbValue)
     overAbsorbFrame:SetAlphaFromBoolean(isClamped, 1, 0)
+    absorbFrame:SetAlphaFromBoolean(isClamped, 0, 1)
 
     return overAbsorbFrame
 end
 
-function Absorbs:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbValue, isClamped)
-    if not frame or not frame.healthBar or not overlay or not overlay.GetTextureFileID then
+function Absorbs:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbValue, isClamped)
+    if not frame or not frame.healthBar or not absorbOverlay or not absorbOverlay.GetTextureFileID then
         return
     end
 
@@ -136,6 +136,7 @@ function Absorbs:ShowOverAbsorbOverlay(frame, overlay, maxHealth, absorbValue, i
     overAbsorbOverlay:SetMinMaxValues(0, maxHealth)
     overAbsorbOverlay:SetValue(absorbValue)
     overAbsorbOverlay:SetAlphaFromBoolean(isClamped, 1, 0)
+    absorbOverlay:SetAlphaFromBoolean(isClamped, 0, 1)
 
     return overAbsorbOverlay
 end
