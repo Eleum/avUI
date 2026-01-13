@@ -1,29 +1,22 @@
 ## Interface: 120000
 ## Title: avUI
 ## Author: AVikend
-## Version: 0.1
+## Version: 0.2
 ## Notes: Extra features done for the Blizzard default UI
 ## IconTexture: Interface\AddOns\avUI\Media\Logo.png
 
 ## Category-enUS: User Interface
-## Category-deDE: Benutzerinterface
-## Category-esES: Interfaz de usuario
-## Category-esMX: Interfaz de usuario
-## Category-frFR: Interface utilisateur
-## Category-itIT: Interfaccia utente
-## Category-koKR: 사용자 인터페이스
-## Category-ptBR: Interface do usuário
 ## Category-ruRU: Интерфейс пользователя
-## Category-zhCN: 用户界面
-## Category-zhTW: 使用者介面
 
 ## Libs
-Libs\Load.xml
+Libs\LibStub\LibStub.lua
+Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceHook-3.0\AceHook-3.0.lua
 
 ## Addon
-Addon\Load.xml
+avUI.lua
 
 ## Modules
-Modules\Load.xml
-
-avUI.lua
+Modules\UnitFrames\UnitFrames.lua
+Modules\UnitFrames\Absorbs.lua
+Modules\UnitFrames\Health.lua

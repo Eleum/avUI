@@ -1,6 +1,4 @@
-local Core = avUI:NewModule("avUI.Core")
+avUI = LibStub("AceAddon-3.0"):NewAddon("avUI")
 
-Core:Enable()
-
-function Core:OnInitialize()
+function avUI:OnInitialize()
 end
