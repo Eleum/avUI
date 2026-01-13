@@ -2,8 +2,8 @@
 ## Title: avUI
 ## Author: AVikend
 ## Version: 0.2
-## Notes: Extra features done for the Blizzard default UI
-## IconTexture: Interface\AddOns\avUI\Media\Logo.png
+## Notes: Extra features for the Blizzard default UI
+## IconTexture: Interface\Icons\ability_priest_spiritoftheredeemer
 
 ## Category-enUS: User Interface
 ## Category-ruRU: Интерфейс пользователя
