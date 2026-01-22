@@ -27,6 +27,7 @@ function Absorbs:SetAbsorbs(frame)
 
     local absorbFrame = frame.totalAbsorb -- absorb background
     local absorbOverlay = frame.totalAbsorbOverlay -- absorb lines texture
+    local absorbGlow = frame.overAbsorbGlow
 
     local unit = frame.unit;
     local maxHealth = UnitHealthMax(unit)
@@ -70,33 +71,34 @@ function Absorbs:SetAbsorbs(frame)
         -- end
     end
 
-    Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)
+    local myOverAbsorbFrame = Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbs, isClamped)
     Absorbs:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbs, isClamped)
+    Absorbs:ShowOverAbsorbGlow(frame, myOverAbsorbFrame, absorbs, isClamped)
 end
 
 function Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue, isClamped)
-    if not frame or not frame.healthBar or not absorbFrame or not absorbFrame.GetTextureFileID then
+    if not frame or not frame.healthBar or not absorbFrame then
         return
     end
 
     local ARTWORK_BASE_LEVEL = -6 -- dispel overlay
 
-    if not frame.overAbsorbFrame then
-        frame.overAbsorbFrame = CreateFrame("StatusBar", nil, frame.healthBar)
-        frame.overAbsorbFrame:SetAllPoints(frame.healthBar)
-        frame.overAbsorbFrame:SetFrameLevel(frame.healthBar:GetFrameLevel())
-        frame.overAbsorbFrame:SetMinMaxValues(0, 1)
-        frame.overAbsorbFrame:EnableMouse(false)
-        frame.overAbsorbFrame:SetReverseFill(true)
-        frame.overAbsorbFrame:SetStatusBarTexture(7539076); -- background health shield texture
+    if not frame.myOverAbsorbFrame then
+        frame.myOverAbsorbFrame = CreateFrame("StatusBar", nil, frame.healthBar)
+        frame.myOverAbsorbFrame:SetAllPoints(frame.healthBar)
+        frame.myOverAbsorbFrame:SetFrameLevel(frame.healthBar:GetFrameLevel())
+        frame.myOverAbsorbFrame:SetMinMaxValues(0, 1)
+        frame.myOverAbsorbFrame:EnableMouse(false)
+        frame.myOverAbsorbFrame:SetReverseFill(true)
+        frame.myOverAbsorbFrame:SetStatusBarTexture(7539076); -- background health shield texture
 
-        local texture = frame.overAbsorbFrame:GetStatusBarTexture();
+        local texture = frame.myOverAbsorbFrame:GetStatusBarTexture();
         texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 2)
 
-        frame.overAbsorbFrame:Show();
+        frame.myOverAbsorbFrame:Show();
     end
 
-    local overAbsorbFrame = frame.overAbsorbFrame
+    local overAbsorbFrame = frame.myOverAbsorbFrame
 
     overAbsorbFrame:SetMinMaxValues(0, maxHealth)
     overAbsorbFrame:SetValue(absorbValue)
@@ -107,31 +109,31 @@ function Absorbs:ShowOverAbsorbFrame(frame, absorbFrame, maxHealth, absorbValue,
 end
 
 function Absorbs:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbValue, isClamped)
-    if not frame or not frame.healthBar or not absorbOverlay or not absorbOverlay.GetTextureFileID then
+    if not frame or not frame.healthBar or not absorbOverlay then
         return
     end
 
     local ARTWORK_BASE_LEVEL = -6 -- dispel overlay
 
-    if not frame.overAbsorbOverlay then
-        frame.overAbsorbOverlay = CreateFrame("StatusBar", nil, frame.healthBar)
-        frame.overAbsorbOverlay:SetAllPoints(frame.healthBar)
-        frame.overAbsorbOverlay:SetFrameLevel(frame.healthBar:GetFrameLevel())
-        frame.overAbsorbOverlay:SetMinMaxValues(0, 1)
-        frame.overAbsorbOverlay:EnableMouse(false)
-        frame.overAbsorbOverlay:SetReverseFill(true)
+    if not frame.myOverAbsorbOverlay then
+        frame.myOverAbsorbOverlay = CreateFrame("StatusBar", nil, frame.healthBar)
+        frame.myOverAbsorbOverlay:SetAllPoints(frame.healthBar)
+        frame.myOverAbsorbOverlay:SetFrameLevel(frame.healthBar:GetFrameLevel())
+        frame.myOverAbsorbOverlay:SetMinMaxValues(0, 1)
+        frame.myOverAbsorbOverlay:EnableMouse(false)
+        frame.myOverAbsorbOverlay:SetReverseFill(true)
 
-        frame.overAbsorbOverlay:Show()
+        frame.myOverAbsorbOverlay:Show()
     end
 
     -- apparently have to set every time because it would not properly stretch in StatusBar frames?
-    frame.overAbsorbOverlay:SetStatusBarTexture(7539079) -- diagonal lines health shield texture
-    local texture = frame.overAbsorbOverlay:GetStatusBarTexture()
+    frame.myOverAbsorbOverlay:SetStatusBarTexture(7539079) -- diagonal lines health shield texture
+    local texture = frame.myOverAbsorbOverlay:GetStatusBarTexture()
     texture:SetHorizTile(true)
     texture:SetVertTile(true)
     texture:SetDrawLayer("ARTWORK", ARTWORK_BASE_LEVEL - 1)
 
-    local overAbsorbOverlay = frame.overAbsorbOverlay
+    local overAbsorbOverlay = frame.myOverAbsorbOverlay
 
     overAbsorbOverlay:SetMinMaxValues(0, maxHealth)
     overAbsorbOverlay:SetValue(absorbValue)
@@ -139,4 +141,33 @@ function Absorbs:ShowOverAbsorbOverlay(frame, absorbOverlay, maxHealth, absorbVa
     absorbOverlay:SetAlphaFromBoolean(isClamped, 0, 1)
 
     return overAbsorbOverlay
+end
+
+function Absorbs:ShowOverAbsorbGlow(frame, myOverAbsorbFrame, absorbValue, isClamped)
+    if not frame or not frame.healthBar then
+        return
+    end
+
+    local ARTWORK_BASE_LEVEL = -6 -- dispel overlay
+
+    if not frame.myOverAbsorbGlow and myOverAbsorbFrame then
+        frame.myOverAbsorbGlow = frame:CreateTexture(nil, "ARTWORK", nil, ARTWORK_BASE_LEVEL - 1)
+
+        frame.myOverAbsorbGlow:SetAtlas("RaidFrame-Shield-Overshield", true)
+        frame.myOverAbsorbGlow:SetBlendMode("ADD")
+
+        local texture = myOverAbsorbFrame:GetStatusBarTexture();
+        frame.myOverAbsorbGlow:SetPoint("TOPRIGHT", texture, "TOPLEFT", 9, 2)
+        frame.myOverAbsorbGlow:SetPoint("BOTTOMRIGHT", texture, "BOTTOMLEFT", 9, -2)
+    end
+
+    local overAbsorbGlow = frame.myOverAbsorbGlow
+
+    overAbsorbGlow:SetAlphaFromBoolean(isClamped, 1, 0)
+
+    if frame.overAbsorbGlow then
+        frame.overAbsorbGlow:SetAlphaFromBoolean(isClamped, 0, 1)
+    end
+
+    return overAbsorbGlow
 end
