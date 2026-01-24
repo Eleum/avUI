@@ -48,13 +48,14 @@ end
 
 function Theme:ApplyTheme()
     self:StylePlayerFrame()
+    self:StyleMainActionBar()
+    self:StyleBarButtons()
     self:StyleTargetFrame()
     self:StyleFocusFrame()
-    self:StyleBars()
     self:StyleCompactPartyFrame()
 end
 
-function Theme:StyleBars()
+function Theme:StyleBarButtons()
     -- Style all standard action bars (1-6)
     for barNum = 1, 6 do
         self:StyleActionBar(barNum)
@@ -72,9 +73,6 @@ function Theme:StyleBars()
     for _, barName in pairs(multiBarNames) do
         self:StyleMultiBar(barName)
     end
-
-    -- Style the main action bar
-    self:StyleMainActionBar()
 end
 
 function Theme:StyleMainActionBar()
