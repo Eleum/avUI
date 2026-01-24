@@ -1,7 +1,7 @@
 ## Interface: 120000, 120001
-## Title: avUI
+## Title: av|cffc08dffUI|r
 ## Author: AVikend
-## Version: 0.2
+## Version: 0.3
 ## Notes: Extra features for the Blizzard default UI
 ## IconTexture: Interface\Icons\ability_priest_spiritoftheredeemer
 
@@ -10,13 +10,16 @@
 
 ## Libs
 Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceEvent-3.0\AceEvent-3.0.lua
 Libs\AceHook-3.0\AceHook-3.0.lua
 
 ## Addon
 avUI.lua
 
 ## Modules
+Modules\Theme\Theme.lua
 Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
 Modules\UnitFrames\Defensives.lua
