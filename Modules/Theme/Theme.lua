@@ -1,18 +1,20 @@
 local Theme = avUI:NewModule("avUI.Theme", "AceHook-3.0")
 
+-- credits to SUI and mUI for auras styling
+
 Theme:Enable()
 
--- Color definitions
 Theme.COLORS = {
     BLACK = {0, 0, 0},
-    DARK_GRAY = {0.2, 0.2, 0.2},
+    DARK_GRAY = {0.15, 0.15, 0.15},
     GRAY = {0.3, 0.3, 0.3},
     LIGHT_GRAY = {0.5, 0.5, 0.5}
 }
 
 Theme.BUTTONS = {
     STANDARD_BARS = 12,
-    MULTI_BARS = 12
+    MULTI_BARS = 12,
+    PET_BARS = 10
 }
 
 function Theme:OnInitialize()
@@ -39,6 +41,10 @@ function Theme:OnEnable()
             self:StyleFocusAuras()
         end
     end)
+
+    self:SecureHookScript(PlayerFrame, "OnUpdate", function(_)
+        self:StylePlayerStatus()
+    end)
 end
 
 function Theme:OnDisable()
@@ -52,13 +58,45 @@ function Theme:ApplyTheme()
     self:StyleBarButtons()
     self:StyleTargetFrame()
     self:StyleFocusFrame()
+    self:StylePetFrame()
     self:StyleCompactPartyFrame()
 end
 
 function Theme:StyleBarButtons()
+    local function StyleActionBar(barNum)
+        -- Style all buttons in a standard action bar (buttons 1-12)
+        for i = 1, self.BUTTONS.STANDARD_BARS do
+            local button = _G["ActionButton" .. i]
+
+            if button then
+                self:StyleButton(button)
+            end
+        end
+    end
+
+    local function StyleMultiBar(barName)
+        -- Style all buttons in a MultiBar
+        for i = 1, self.BUTTONS.MULTI_BARS do
+            local button = _G["MultiBar" .. barName .. "Button" .. i]
+            if button then
+                self:StyleButton(button)
+            end
+        end
+    end
+
+    local function StylePetBar(barName)
+        -- Style all buttons in the Pet Action Bar
+        for i = 1, self.BUTTONS.PET_BARS do
+            local button = _G["PetActionButton" .. i]
+            if button then
+                self:StyleButton(button)
+            end
+        end
+    end
+
     -- Style all standard action bars (1-6)
     for barNum = 1, 6 do
-        self:StyleActionBar(barNum)
+        StyleActionBar(barNum)
     end
 
     -- Style all multi bars
@@ -70,9 +108,12 @@ function Theme:StyleBarButtons()
         [5] = "5",
         [6] = "6"
     }
+
     for _, barName in pairs(multiBarNames) do
-        self:StyleMultiBar(barName)
+        StyleMultiBar(barName)
     end
+
+    StylePetBar()
 end
 
 function Theme:StyleMainActionBar()
@@ -126,15 +167,28 @@ function Theme:StylePlayerFrame()
     end
 
     local function StyleFrameContent()
-        local tex = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon
+        local textures = {PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture,
+                          PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon,
+                          PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerRestLoop.RestTexture}
 
-        if tex then
-            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        for _, tex in pairs(textures) do
+            if tex then
+                tex:SetVertexColor(unpack(self.COLORS.GRAY))
+            end
         end
     end
 
     StyleFrame()
     StyleFrameContent()
+end
+
+function Theme:StylePlayerStatus()
+    local tex = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture
+
+    if tex then
+        local r, g, b, a = tex:GetVertexColor()
+        tex:SetVertexColor(r, g, b, a * 0.5)
+    end
 end
 
 function Theme:StyleTargetFrame()
@@ -179,6 +233,14 @@ function Theme:StyleFocusFrame()
     StyleFrameContent()
 end
 
+function Theme:StylePetFrame()
+    local tex = PetFrameTexture
+
+    if tex then
+        tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+    end
+end
+
 function Theme:StylePlayerAuras()
     for index, _ in pairs(BuffFrame.auraFrames) do
         local aura = select(index, BuffFrame.AuraContainer:GetChildren())
@@ -195,27 +257,6 @@ end
 function Theme:StyleFocusAuras()
     for aura, _ in FocusFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
         self:StyleAura(aura)
-    end
-end
-
-function Theme:StyleActionBar(barNum)
-    -- Style all buttons in a standard action bar (buttons 1-12)
-    for i = 1, self.BUTTONS.STANDARD_BARS do
-        local button = _G["ActionButton" .. i]
-
-        if button then
-            self:StyleButton(button)
-        end
-    end
-end
-
-function Theme:StyleMultiBar(barName)
-    -- Style all buttons in a MultiBar
-    for i = 1, self.BUTTONS.MULTI_BARS do
-        local button = _G["MultiBar" .. barName .. "Button" .. i]
-        if button then
-            self:StyleButton(button)
-        end
     end
 end
 

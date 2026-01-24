@@ -1,6 +1,8 @@
 local Absorbs = avUI:NewModule("avUI.UnitFrames.Absorbs", "AceHook-3.0")
 local UnitFrames = avUI:GetModule("avUI.UnitFrames")
 
+-- credits to DandersFrames for the absorbs logic
+
 Absorbs:Enable()
 
 function Absorbs:OnInitialize()
@@ -22,8 +24,6 @@ function Absorbs:SetAbsorbs(frame)
         UnitIsDeadOrGhost(frame.displayedUnit) then
         return
     end
-
-    -- credits to DandersFrames for the logic below
 
     local absorbFrame = frame.totalAbsorb -- absorb background
     local absorbOverlay = frame.totalAbsorbOverlay -- absorb lines texture
