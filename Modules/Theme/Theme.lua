@@ -60,6 +60,8 @@ function Theme:ApplyTheme()
     self:StyleFocusFrame()
     self:StylePetFrame()
     self:StyleCompactPartyFrame()
+    self:StyleMinimap()
+    self:StyleObjectiveFrame()
 end
 
 function Theme:StyleBarButtons()
@@ -187,7 +189,7 @@ function Theme:StylePlayerStatus()
 
     if tex then
         local r, g, b, a = tex:GetVertexColor()
-        tex:SetVertexColor(r, g, b, a * 0.5)
+        tex:SetVertexColor(r, g, b, a * 0.25)
     end
 end
 
@@ -257,6 +259,26 @@ end
 function Theme:StyleFocusAuras()
     for aura, _ in FocusFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
         self:StyleAura(aura)
+    end
+end
+
+function Theme:StyleMinimap()
+    local tex = MinimapCompassTexture
+
+    if tex then
+        tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+    end
+end
+
+function Theme:StyleObjectiveFrame()
+    local frames = {"ObjectiveTrackerFrame", "QuestObjectiveTracker", "WorldQuestObjectiveTracker"}
+
+    for _, f in pairs(frames) do
+        local frame = _G[f].Header.Background
+
+        if frame then
+            frame:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        end
     end
 end
 
