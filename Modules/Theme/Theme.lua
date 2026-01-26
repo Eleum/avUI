@@ -62,6 +62,7 @@ function Theme:ApplyTheme()
     self:StyleCompactPartyFrame()
     self:StyleMinimap()
     self:StyleObjectiveTrackers()
+    self:StyleStatusTrackingBars()
 end
 
 function Theme:StyleBarButtons()
@@ -288,14 +289,26 @@ function Theme:StyleMinimap()
 end
 
 function Theme:StyleObjectiveTrackers()
-    local frames = {"ObjectiveTrackerFrame", "CampaignQuestObjectiveTracker", "QuestObjectiveTracker",
-                    "WorldQuestObjectiveTracker", "AchievementObjectiveTracker", "ProfessionsRecipeTracker"}
+    local frames = {ObjectiveTrackerFrame, CampaignQuestObjectiveTracker, QuestObjectiveTracker,
+                    WorldQuestObjectiveTracker, AchievementObjectiveTracker, ProfessionsRecipeTracker}
 
     for _, f in pairs(frames) do
-        local frame = _G[f].Header.Background
+        local tex = f.Header.Background
 
-        if frame then
-            frame:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        if tex then
+            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        end
+    end
+end
+
+function Theme:StyleStatusTrackingBars()
+    local frames = {MainStatusTrackingBarContainer, SecondaryStatusTrackingBarContainer}
+    
+    for _, frame in pairs(frames) do
+        local tex = frame.BarFrameTexture
+
+        if tex then
+            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
         end
     end
 end
