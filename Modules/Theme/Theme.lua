@@ -61,7 +61,7 @@ function Theme:ApplyTheme()
     self:StylePetFrame()
     self:StyleCompactPartyFrame()
     self:StyleMinimap()
-    self:StyleObjectiveFrame()
+    self:StyleObjectiveTrackers()
 end
 
 function Theme:StyleBarButtons()
@@ -80,6 +80,18 @@ function Theme:StyleBarButtons()
         -- Style all buttons in a MultiBar
         for i = 1, self.BUTTONS.MULTI_BARS do
             local button = _G["MultiBar" .. barName .. "Button" .. i]
+
+            if button then
+                self:StyleButton(button)
+            end
+        end
+    end
+
+    local function StyleStanceBar()
+        -- Style all buttons in the Stance Bar
+        for i = 1, self.BUTTONS.STANDARD_BARS do
+            local button = _G["StanceButton" .. i]
+
             if button then
                 self:StyleButton(button)
             end
@@ -90,6 +102,7 @@ function Theme:StyleBarButtons()
         -- Style all buttons in the Pet Action Bar
         for i = 1, self.BUTTONS.PET_BARS do
             local button = _G["PetActionButton" .. i]
+
             if button then
                 self:StyleButton(button)
             end
@@ -115,6 +128,7 @@ function Theme:StyleBarButtons()
         StyleMultiBar(barName)
     end
 
+    StyleStanceBar()
     StylePetBar()
 end
 
@@ -161,10 +175,13 @@ end
 
 function Theme:StylePlayerFrame()
     local function StyleFrame()
-        local tex = PlayerFrame.PlayerFrameContainer.FrameTexture
+        local textures = {PlayerFrame.PlayerFrameContainer.FrameTexture,
+                          PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture}
 
-        if tex then
-            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        for _, tex in pairs(textures) do
+            if tex then
+                tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            end
         end
     end
 
@@ -175,7 +192,7 @@ function Theme:StylePlayerFrame()
 
         for _, tex in pairs(textures) do
             if tex then
-                tex:SetVertexColor(unpack(self.COLORS.GRAY))
+                tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
             end
         end
     end
@@ -270,8 +287,9 @@ function Theme:StyleMinimap()
     end
 end
 
-function Theme:StyleObjectiveFrame()
-    local frames = {"ObjectiveTrackerFrame", "QuestObjectiveTracker", "WorldQuestObjectiveTracker"}
+function Theme:StyleObjectiveTrackers()
+    local frames = {"ObjectiveTrackerFrame", "CampaignQuestObjectiveTracker", "QuestObjectiveTracker",
+                    "WorldQuestObjectiveTracker", "AchievementObjectiveTracker", "ProfessionsRecipeTracker"}
 
     for _, f in pairs(frames) do
         local frame = _G[f].Header.Background
