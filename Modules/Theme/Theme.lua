@@ -8,7 +8,8 @@ Theme.COLORS = {
     BLACK = {0, 0, 0},
     DARK_GRAY = {0.15, 0.15, 0.15},
     GRAY = {0.3, 0.3, 0.3},
-    LIGHT_GRAY = {0.5, 0.5, 0.5}
+    LIGHT_GRAY = {0.5, 0.5, 0.5},
+    INACTIVE = {0.5, 0.5, 0.5}
 }
 
 Theme.BUTTONS = {
@@ -42,8 +43,20 @@ function Theme:OnEnable()
         end
     end)
 
-    self:SecureHookScript(PlayerFrame, "OnUpdate", function(_)
+    self:SecureHookScript(PlayerFrame, "OnUpdate", function()
         self:StylePlayerStatus()
+    end)
+
+    hooksecurefunc("UnitFrameHealthBar_Update", function(statusBar)
+        self:StyleHealthBar(statusBar)
+    end)
+
+    hooksecurefunc("HealthBar_OnValueChanged", function(statusBar)
+        self:StyleHealthBar(statusBar)
+    end)
+
+    self:SecureHook(TomTom, "ShowHideCoordBlock", function()
+        self:StyleTomTom()
     end)
 end
 
@@ -60,9 +73,10 @@ function Theme:ApplyTheme()
     self:StyleFocusFrame()
     self:StylePetFrame()
     self:StyleCompactPartyFrame()
-    self:StyleMinimap()
+    self:StyleMinimapTex()
     self:StyleObjectiveTrackers()
     self:StyleStatusTrackingBars()
+    self:StyleTomTom()
 end
 
 function Theme:StyleBarButtons()
@@ -264,23 +278,23 @@ end
 function Theme:StylePlayerAuras()
     for index, _ in pairs(BuffFrame.auraFrames) do
         local aura = select(index, BuffFrame.AuraContainer:GetChildren())
-        self:StyleAura(aura)
+        self:StyleAuraButton(aura)
     end
 end
 
 function Theme:StyleTargetAuras()
     for aura, _ in TargetFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleAura(aura)
+        self:StyleAuraButton(aura)
     end
 end
 
 function Theme:StyleFocusAuras()
     for aura, _ in FocusFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleAura(aura)
+        self:StyleAuraButton(aura)
     end
 end
 
-function Theme:StyleMinimap()
+function Theme:StyleMinimapTex()
     local tex = MinimapCompassTexture
 
     if tex then
@@ -303,7 +317,7 @@ end
 
 function Theme:StyleStatusTrackingBars()
     local frames = {MainStatusTrackingBarContainer, SecondaryStatusTrackingBarContainer}
-    
+
     for _, frame in pairs(frames) do
         local tex = frame.BarFrameTexture
 
@@ -330,7 +344,7 @@ function Theme:StyleButton(button)
     end
 end
 
-function Theme:StyleAura(aura)
+function Theme:StyleAuraButton(aura)
     -- Validate frame and icon exist
     if not aura or not aura.Icon then
         return
@@ -351,5 +365,59 @@ function Theme:StyleAura(aura)
     -- Apply mask to clip sharp corners on the icon
     if aura.Icon.SetMask then
         aura.Icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
+    end
+
+    if aura.TempEnchantBorder then
+        aura.TempEnchantBorder:Hide()
+    end
+end
+
+function Theme:StyleHealthBar(statusBar)
+    if not statusBar or not statusBar.unit then
+        return
+    end
+
+    statusBar:SetStatusBarDesaturated(1)
+
+    local unit = statusBar.unit
+
+    if UnitIsPlayer(unit) and UnitIsConnected(unit) then
+        local _, class = UnitClass(unit)
+
+        if class then
+            local color = RAID_CLASS_COLORS[class]
+            statusBar:SetStatusBarColor(color.r, color.g, color.b)
+        end
+    elseif UnitIsPlayer(unit) and not UnitIsConnected(unit) then
+        statusBar:SetStatusBarColor(unpack(self.COLORS.INACTIVE));
+    else
+        if UnitExists(unit) then
+            if not UnitPlayerControlled(unit) and UnitIsTapDenied(unit) then
+                statusBar:SetStatusBarColor(unpack(self.COLORS.INACTIVE))
+            elseif not UnitIsTapDenied(unit) then
+                local reaction = UnitReaction(unit, "player")
+
+                if reaction then
+                    local color = FACTION_BAR_COLORS[reaction]
+
+                    if color then
+                        statusBar:SetStatusBarColor(color.r, color.g, color.b)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function Theme:StyleTomTom()
+    local texs = {"LeftEdge", "RightEdge", "TopEdge", "BottomEdge", "TopLeftCorner", "TopRightCorner",
+                  "BottomLeftCorner", "BottomRightCorner"}
+
+    for _, part in pairs(texs) do
+        local tex = TomTomBlock[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        end
     end
 end
