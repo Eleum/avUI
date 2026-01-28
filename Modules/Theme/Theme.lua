@@ -9,8 +9,11 @@ Theme.COLORS = {
     DARK_GRAY = {0.15, 0.15, 0.15},
     GRAY = {0.3, 0.3, 0.3},
     LIGHT_GRAY = {0.5, 0.5, 0.5},
-    INACTIVE = {0.5, 0.5, 0.5}
+    INACTIVE = {0.5, 0.5, 0.5},
+    DIM_WHITE = {0.8, 0.8, 0.8}
 }
+Theme.MAIN_COLOR = Theme.COLORS.DARK_GRAY
+Theme.SECONDARY_COLOR = Theme.COLORS.GRAY
 
 Theme.BUTTONS = {
     STANDARD_BARS = 12,
@@ -73,9 +76,11 @@ function Theme:ApplyTheme()
     self:StyleFocusFrame()
     self:StylePetFrame()
     self:StyleCompactPartyFrame()
-    self:StyleMinimapTex()
+    self:StyleMinimap()
     self:StyleObjectiveTrackers()
     self:StyleStatusTrackingBars()
+    self:StyleChatFrame()
+    self:StyleCharacterFrame()
     self:StyleTomTom()
 end
 
@@ -154,11 +159,11 @@ function Theme:StyleMainActionBar()
         local rightEndCap = MainActionBar.EndCaps.RightEndCap
 
         if leftEndCap then
-            leftEndCap:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            leftEndCap:SetVertexColor(unpack(self.MAIN_COLOR))
         end
 
         if rightEndCap then
-            rightEndCap:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            rightEndCap:SetVertexColor(unpack(self.MAIN_COLOR))
         end
     end
 
@@ -167,12 +172,25 @@ function Theme:StyleMainActionBar()
         local borderArt = MainActionBar.BorderArt
 
         if borderArt then
-            borderArt:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            borderArt:SetVertexColor(unpack(self.MAIN_COLOR))
+        end
+    end
+
+    local function StyleHorizontalDividers()
+        if MainActionBar.HorizontalDividersPool then
+            local color = self.SECONDARY_COLOR;
+
+            for divider, _ in MainActionBar.HorizontalDividersPool:EnumerateActive() do
+                if divider then
+                    divider:SetVertexColor(unpack(color))
+                end
+            end
         end
     end
 
     StyleEndCaps()
     StyleBorderArt()
+    StyleHorizontalDividers()
 end
 
 function Theme:StyleCompactPartyFrame()
@@ -294,7 +312,7 @@ function Theme:StyleFocusAuras()
     end
 end
 
-function Theme:StyleMinimapTex()
+function Theme:StyleMinimap()
     local tex = MinimapCompassTexture
 
     if tex then
@@ -303,8 +321,9 @@ function Theme:StyleMinimapTex()
 end
 
 function Theme:StyleObjectiveTrackers()
-    local frames = {ObjectiveTrackerFrame, CampaignQuestObjectiveTracker, QuestObjectiveTracker,
-                    WorldQuestObjectiveTracker, AchievementObjectiveTracker, ProfessionsRecipeTracker}
+    local frames = {ObjectiveTrackerFrame, CampaignQuestObjectiveTracker, ScenarioObjectiveTracker,
+                    QuestObjectiveTracker, WorldQuestObjectiveTracker, AchievementObjectiveTracker,
+                    ProfessionsRecipeTracker}
 
     for _, f in pairs(frames) do
         local tex = f.Header.Background
@@ -407,6 +426,156 @@ function Theme:StyleHealthBar(statusBar)
             end
         end
     end
+end
+
+function Theme:StyleChatFrame()
+    local function StyleChatTabs()
+        local texs = {"Left", "Middle", "Right"}
+
+        for i = 1, NUM_CHAT_WINDOWS do
+            local frame = _G["ChatFrame" .. i .. "Tab"]
+
+            if frame then
+                for _, part in pairs(texs) do
+                    local tex = frame[part]
+
+                    if tex then
+                        tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+                    end
+                end
+            end
+        end
+    end
+
+    local function StyleChatEditBox()
+        local texs = {ChatFrame1EditBoxLeft, ChatFrame1EditBoxMid, ChatFrame1EditBoxRight}
+
+        for _, part in pairs(texs) do
+            local tex = part
+
+            if tex then
+                tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            end
+        end
+    end
+
+    ChatFrame1Background:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+    ChatFrame1ButtonFrameBackground:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+    StyleChatTabs()
+    StyleChatEditBox()
+end
+
+function Theme:StyleCharacterFrame()
+    local function StyleBackground()
+        local color = self.MAIN_COLOR;
+
+        local texs = {"Background", "Bg"}
+
+        for _, part in pairs(texs) do
+            local tex = CharacterFrame[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(color));
+            end
+        end
+
+        texs = {"TopEdge", "BottomEdge", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner", "BottomLeftCorner",
+                "BottomRightCorner"}
+
+        for _, part in pairs(texs) do
+            local tex = CharacterFrame.NineSlice[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(color));
+            end
+        end
+
+        CharacterStatsPane.ClassBackground:SetVertexColor(unpack(color));
+
+        local frames = {"ItemLevelCategory", "AttributesCategory", "EnhancementsCategory"}
+
+        for _, part in pairs(frames) do
+            local frame = CharacterStatsPane[part]
+
+            if frame and frame.Background then
+                frame.Background:SetVertexColor(unpack(color));
+            end
+        end
+
+        local insetColor = self.SECONDARY_COLOR;
+
+        CharacterFrameInsetRight.Bg:SetVertexColor(unpack(insetColor));
+
+        local insets = {CharacterFrameInset.NineSlice, CharacterFrameInsetRight.NineSlice}
+        local insetTexs = {"TopEdge", "BottomEdge", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+                           "BottomLeftCorner", "BottomRightCorner"}
+
+        for _, inset in pairs(insets) do
+            for _, part in pairs(insetTexs) do
+                local tex = inset[part]
+
+                if tex then
+                    tex:SetVertexColor(unpack(insetColor));
+                end
+            end
+        end
+
+        local borders =
+            {"Top", "TopLeft", "TopRight", "Left", "Right", "Bottom", "BottomLeft", "BottomRight", "Bottom2"}
+
+        for _, part in pairs(borders) do
+            local tex = _G["PaperDollInnerBorder" .. part]
+
+            if tex then
+                tex:SetVertexColor(unpack(insetColor));
+            end
+        end
+    end
+
+    local function StyleEquipmentSlots()
+        local color = self.COLORS.DARK_GRAY;
+
+        local texs = {CharacterHeadSlotFrame, CharacterNeckSlotFrame, CharacterShoulderSlotFrame,
+                      CharacterBackSlotFrame, CharacterChestSlotFrame, CharacterShirtSlotFrame,
+                      CharacterTabardSlotFrame, CharacterWristSlotFrame, CharacterHandsSlotFrame,
+                      CharacterWaistSlotFrame, CharacterLegsSlotFrame, CharacterFeetSlotFrame,
+                      CharacterFinger0SlotFrame, CharacterFinger1SlotFrame, CharacterTrinket0SlotFrame,
+                      CharacterTrinket1SlotFrame, CharacterMainHandSlotFrame, CharacterSecondaryHandSlotFrame,
+                      CharacterRangedSlotFrame}
+
+        for _, tex in pairs(texs) do
+            if tex then
+                tex:SetVertexColor(unpack(color));
+            end
+        end
+
+        -- style auto-named regions for main hand and off hand slots
+        local function StyleOtherRegions()
+            local frames = {CharacterMainHandSlot, CharacterSecondaryHandSlot, MainActionBar}
+
+            for _, frame in pairs(frames) do
+                for i = 1, frame:GetNumRegions() do
+                    local region = select(i, frame:GetRegions())
+
+                    if region and region.SetVertexColor then
+                        region:SetVertexColor(unpack(color));
+                    end
+                end
+            end
+        end
+
+        StyleOtherRegions()
+    end
+
+    local function StyleTabs()
+        PaperDollSidebarTab1.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
+        PaperDollSidebarTab2.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
+        PaperDollSidebarTab3.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
+    end
+
+    StyleBackground()
+    StyleEquipmentSlots()
+    StyleTabs()
 end
 
 function Theme:StyleTomTom()
