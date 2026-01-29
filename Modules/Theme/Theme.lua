@@ -83,6 +83,8 @@ function Theme:ApplyTheme()
     self:StyleCharacterFrame()
     self:StyleTooltips()
     self:StyleBags()
+    self:StylePopups()
+    self:StyleGameMenu()
     self:StyleTomTom()
 end
 
@@ -236,7 +238,7 @@ function Theme:StylePlayerFrame()
     StyleFrameContent()
 
     PlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
-    
+
     self:SecureHookScript(PlayerCastingBarFrame, "OnEvent", function(frame, a)
         frame.Icon:Show()
     end)
@@ -293,7 +295,7 @@ function Theme:StyleFocusFrame()
 
     StyleFrame()
     StyleFrameContent()
-    
+
     FocusFrameSpellBar.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 end
 
@@ -717,12 +719,36 @@ function Theme:StyleBags()
     StyleBorder(BackpackTokenFrame.Border, self.COLORS.GRAY)
 end
 
+function Theme:StylePopups()
+    StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleGameMenu()
+    self:SecureHookScript(GameMenuFrame, "OnShow", function(frame)
+        local color = self.SECONDARY_COLOR
+        local border = frame.Border
+        
+        self:StyleNineSlice(border, color)
+
+        local texs = {"CenterBG", "LeftBG", "RightBG"}
+
+        for _, part in pairs(texs) do
+            local tex = GameMenuFrame.Header[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(color));
+            end
+        end
+    end)
+end
+
 function Theme:StyleNineSlice(frame, color)
     if not frame then
         return
     end
 
-    local texs = {"TopEdge", "BottomEdge", "Center", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+    local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
                   "BottomLeftCorner", "BottomRightCorner"}
 
     for _, part in pairs(texs) do
