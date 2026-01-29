@@ -82,6 +82,7 @@ function Theme:ApplyTheme()
     self:StyleChatFrame()
     self:StyleCharacterFrame()
     self:StyleTooltips()
+    self:StyleBags()
     self:StyleTomTom()
 end
 
@@ -233,6 +234,12 @@ function Theme:StylePlayerFrame()
 
     StyleFrame()
     StyleFrameContent()
+
+    PlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+    
+    self:SecureHookScript(PlayerCastingBarFrame, "OnEvent", function(frame, a)
+        frame.Icon:Show()
+    end)
 end
 
 function Theme:StylePlayerStatus()
@@ -263,6 +270,8 @@ function Theme:StyleTargetFrame()
 
     StyleFrame()
     StyleFrameContent()
+
+    TargetFrameSpellBar.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 end
 
 function Theme:StyleFocusFrame()
@@ -284,6 +293,8 @@ function Theme:StyleFocusFrame()
 
     StyleFrame()
     StyleFrameContent()
+    
+    FocusFrameSpellBar.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 end
 
 function Theme:StylePetFrame()
@@ -348,19 +359,16 @@ function Theme:StyleStatusTrackingBars()
 end
 
 function Theme:StyleButton(button)
-    -- Set button border to black
     if button.NormalTexture then
-        button.NormalTexture:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+        button.NormalTexture:SetVertexColor(unpack(self.MAIN_COLOR))
     end
 
-    -- Set pushed state border to black
     if button.PushedTexture then
         button.PushedTexture:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
     end
 
-    -- Set highlight border to black
     if button.HighlightTexture then
-        button.HighlightTexture:SetVertexColor(unpack(self.COLORS.GRAY))
+        button.HighlightTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
     end
 end
 
@@ -655,6 +663,89 @@ function Theme:StyleTooltips()
                     StyleTooltip(tooltip)
                 end)
             end
+        end
+    end
+end
+
+function Theme:StyleBags()
+    local function StyleBagSlots(frame, color)
+        self:SecureHookScript(frame, "OnUpdate", function(f)
+            for button, _ in f.itemButtonPool:EnumerateActive() do
+                local tex = button.NormalTexture
+
+                if tex then
+                    tex:SetVertexColor(unpack(self.MAIN_COLOR));
+                end
+            end
+        end)
+    end
+
+    local function StyleBorder(frame, color)
+        if not frame then
+            return
+        end
+
+        local texs = {"Left", "Middle", "Right"}
+
+        for _, part in pairs(texs) do
+            local tex = frame[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(color));
+            end
+        end
+    end
+
+    local combined = ContainerFrameCombinedBags
+
+    self:StyleNineSlice(combined.NineSlice, self.MAIN_COLOR)
+    self:StyleBg(combined.Bg, self.COLORS.BLACK)
+    StyleBagSlots(combined, self.MAIN_COLOR)
+
+    for i = 1, 6 do
+        local frame = _G["ContainerFrame" .. i]
+
+        if frame then
+            self:StyleNineSlice(frame["NineSlice"], self.MAIN_COLOR)
+            self:StyleBg(frame["Bg"], self.COLORS.BLACK)
+            StyleBagSlots(frame, self.MAIN_COLOR)
+        end
+    end
+
+    StyleBorder(ContainerFrameCombinedBags.MoneyFrame.Border, self.COLORS.GRAY)
+    StyleBorder(ContainerFrame1MoneyFrame.Border, self.COLORS.GRAY)
+    StyleBorder(BackpackTokenFrame.Border, self.COLORS.GRAY)
+end
+
+function Theme:StyleNineSlice(frame, color)
+    if not frame then
+        return
+    end
+
+    local texs = {"TopEdge", "BottomEdge", "Center", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+                  "BottomLeftCorner", "BottomRightCorner"}
+
+    for _, part in pairs(texs) do
+        local tex = frame[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(color));
+        end
+    end
+end
+
+function Theme:StyleBg(frame, color)
+    if not frame then
+        return
+    end
+
+    local texs = {"TopSection", "BottomEdge", "BottomLeft", "BottomRight"}
+
+    for _, part in pairs(texs) do
+        local tex = frame[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(color));
         end
     end
 end
