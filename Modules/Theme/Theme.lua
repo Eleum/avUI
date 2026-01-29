@@ -634,24 +634,27 @@ function Theme:StyleTooltips()
         end
     end
 
-    -- Hook GameTooltip to style on show
-    self:SecureHookScript(GameTooltip, "OnShow", function()
-        StyleTooltip(GameTooltip)
-    end)
+    local tooltips = {GameTooltip, ItemRefTooltip}
 
-    -- Hook ItemRefTooltip for item links
-    self:SecureHookScript(ItemRefTooltip, "OnShow", function()
-        StyleTooltip(ItemRefTooltip)
-    end)
+    for _, tooltip in pairs(tooltips) do
+        self:SecureHookScript(tooltip, "OnShow", function()
+            StyleTooltip(tooltip)
+        end)
+    end
 
-    -- Style shopping tooltips if they exist
-    for i = 1, 2 do
-        local tooltip = _G["ShoppingTooltip" .. i]
+    tooltips = {"ShoppingTooltip", "ItemRefShoppingTooltip"}
 
-        if tooltip then
-            self:SecureHookScript(tooltip, "OnShow", function()
-                StyleTooltip(tooltip)
-            end)
+    for _, tooltipName in pairs(tooltips) do
+        local tooltip = _G[tooltipName]
+
+        for i = 1, 2 do
+            local tooltip = _G[tooltipName .. i]
+
+            if tooltip then
+                self:SecureHookScript(tooltip, "OnShow", function()
+                    StyleTooltip(tooltip)
+                end)
+            end
         end
     end
 end
