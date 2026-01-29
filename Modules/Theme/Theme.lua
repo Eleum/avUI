@@ -81,6 +81,7 @@ function Theme:ApplyTheme()
     self:StyleStatusTrackingBars()
     self:StyleChatFrame()
     self:StyleCharacterFrame()
+    self:StyleTooltips()
     self:StyleTomTom()
 end
 
@@ -532,50 +533,127 @@ function Theme:StyleCharacterFrame()
         end
     end
 
-    local function StyleEquipmentSlots()
-        local color = self.COLORS.DARK_GRAY;
+    local function StylePaperDoll()
+        local function StyleEquipmentSlots()
+            local color = self.COLORS.DARK_GRAY;
 
-        local texs = {CharacterHeadSlotFrame, CharacterNeckSlotFrame, CharacterShoulderSlotFrame,
-                      CharacterBackSlotFrame, CharacterChestSlotFrame, CharacterShirtSlotFrame,
-                      CharacterTabardSlotFrame, CharacterWristSlotFrame, CharacterHandsSlotFrame,
-                      CharacterWaistSlotFrame, CharacterLegsSlotFrame, CharacterFeetSlotFrame,
-                      CharacterFinger0SlotFrame, CharacterFinger1SlotFrame, CharacterTrinket0SlotFrame,
-                      CharacterTrinket1SlotFrame, CharacterMainHandSlotFrame, CharacterSecondaryHandSlotFrame,
-                      CharacterRangedSlotFrame}
+            local texs = {CharacterHeadSlotFrame, CharacterNeckSlotFrame, CharacterShoulderSlotFrame,
+                          CharacterBackSlotFrame, CharacterChestSlotFrame, CharacterShirtSlotFrame,
+                          CharacterTabardSlotFrame, CharacterWristSlotFrame, CharacterHandsSlotFrame,
+                          CharacterWaistSlotFrame, CharacterLegsSlotFrame, CharacterFeetSlotFrame,
+                          CharacterFinger0SlotFrame, CharacterFinger1SlotFrame, CharacterTrinket0SlotFrame,
+                          CharacterTrinket1SlotFrame, CharacterMainHandSlotFrame, CharacterSecondaryHandSlotFrame,
+                          CharacterRangedSlotFrame}
 
-        for _, tex in pairs(texs) do
-            if tex then
-                tex:SetVertexColor(unpack(color));
+            for _, tex in pairs(texs) do
+                if tex then
+                    tex:SetVertexColor(unpack(color));
+                end
             end
+
+            -- style auto-named regions for main hand and off hand slots
+            local function StyleOtherRegions()
+                local frames = {CharacterMainHandSlot, CharacterSecondaryHandSlot, MainActionBar}
+
+                for _, frame in pairs(frames) do
+                    for i = 1, frame:GetNumRegions() do
+                        local region = select(i, frame:GetRegions())
+
+                        if region and region.SetVertexColor then
+                            region:SetVertexColor(unpack(color));
+                        end
+                    end
+                end
+            end
+
+            StyleOtherRegions()
         end
 
-        -- style auto-named regions for main hand and off hand slots
-        local function StyleOtherRegions()
-            local frames = {CharacterMainHandSlot, CharacterSecondaryHandSlot, MainActionBar}
+        local function StyleTabs()
+            PaperDollSidebarTab1.TabBg:SetVertexColor(unpack(self.SECONDARY_COLOR));
+            PaperDollSidebarTab2.TabBg:SetVertexColor(unpack(self.SECONDARY_COLOR));
+            PaperDollSidebarTab3.TabBg:SetVertexColor(unpack(self.SECONDARY_COLOR));
+        end
 
-            for _, frame in pairs(frames) do
-                for i = 1, frame:GetNumRegions() do
-                    local region = select(i, frame:GetRegions())
+        StyleEquipmentSlots()
+        StyleTabs()
+    end
 
-                    if region and region.SetVertexColor then
-                        region:SetVertexColor(unpack(color));
+    local function StyleTabs()
+        local tabs = {"CharacterFrameTab1", "CharacterFrameTab2", "CharacterFrameTab3"}
+        local parts = {"Left", "Middle", "Right"}
+
+        for _, tab in pairs(tabs) do
+            for _, part in pairs(parts) do
+                local tex = _G[tab][part]
+
+                if tex then
+                    tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
+                end
+            end
+        end
+    end
+
+    StyleBackground()
+    StylePaperDoll()
+    StyleTabs()
+end
+
+function Theme:StyleTooltips()
+    local function StyleTooltip(tooltip)
+        if tooltip then
+
+            if tooltip.NineSlice then
+                local texs = {"TopEdge", "BottomEdge", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+                              "BottomLeftCorner", "BottomRightCorner"}
+
+                for _, part in pairs(texs) do
+                    local tex = tooltip.NineSlice[part]
+
+                    if tex then
+                        tex:SetVertexColor(unpack(self.MAIN_COLOR))
+                    end
+                end
+
+                if tooltip.NineSlice.Center then
+                    tooltip.NineSlice.Center:SetVertexColor(unpack(self.COLORS.BLACK))
+                end
+            end
+
+            if tooltip.CompareHeader then
+                local compare = tooltip.CompareHeader
+
+                for i = 1, compare:GetNumRegions() do
+                    local region = select(i, compare:GetRegions())
+
+                    if region and region:GetObjectType() == "Texture" then
+                        region:SetVertexColor(unpack(self.SECONDARY_COLOR));
                     end
                 end
             end
         end
-
-        StyleOtherRegions()
     end
 
-    local function StyleTabs()
-        PaperDollSidebarTab1.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
-        PaperDollSidebarTab2.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
-        PaperDollSidebarTab3.TabBg:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY));
-    end
+    -- Hook GameTooltip to style on show
+    self:SecureHookScript(GameTooltip, "OnShow", function()
+        StyleTooltip(GameTooltip)
+    end)
 
-    StyleBackground()
-    StyleEquipmentSlots()
-    StyleTabs()
+    -- Hook ItemRefTooltip for item links
+    self:SecureHookScript(ItemRefTooltip, "OnShow", function()
+        StyleTooltip(ItemRefTooltip)
+    end)
+
+    -- Style shopping tooltips if they exist
+    for i = 1, 2 do
+        local tooltip = _G["ShoppingTooltip" .. i]
+
+        if tooltip then
+            self:SecureHookScript(tooltip, "OnShow", function()
+                StyleTooltip(tooltip)
+            end)
+        end
+    end
 end
 
 function Theme:StyleTomTom()
