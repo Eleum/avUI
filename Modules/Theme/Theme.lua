@@ -50,11 +50,11 @@ function Theme:OnEnable()
         self:StylePlayerStatus()
     end)
 
-    hooksecurefunc("UnitFrameHealthBar_Update", function(statusBar)
+    self:SecureHook("UnitFrameHealthBar_Update", function(statusBar)
         self:StyleHealthBar(statusBar)
     end)
 
-    hooksecurefunc("HealthBar_OnValueChanged", function(statusBar)
+    self:SecureHook("HealthBar_OnValueChanged", function(statusBar)
         self:StyleHealthBar(statusBar)
     end)
 
@@ -86,6 +86,7 @@ function Theme:ApplyTheme()
     self:StylePopups()
     self:StyleGameMenu()
     self:StyleTomTom()
+    self:StyleFrogskisGcdBar()
 end
 
 function Theme:StyleBarButtons()
@@ -610,63 +611,23 @@ function Theme:StyleCharacterFrame()
 end
 
 function Theme:StyleTooltips()
-    local function StyleTooltip(tooltip)
-        if tooltip then
+    local function StyleTooltip(tt)
+        if tt.NineSlice then
+            self:StyleNineSlice(tt.NineSlice, Theme.COLORS.BLACK)
+        end
 
-            if tooltip.NineSlice then
-                local texs = {"TopEdge", "BottomEdge", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
-                              "BottomLeftCorner", "BottomRightCorner"}
-
-                for _, part in pairs(texs) do
-                    local tex = tooltip.NineSlice[part]
-
-                    if tex then
-                        tex:SetVertexColor(unpack(self.MAIN_COLOR))
-                    end
-                end
-
-                if tooltip.NineSlice.Center then
-                    tooltip.NineSlice.Center:SetVertexColor(unpack(self.COLORS.BLACK))
-                end
-            end
-
-            if tooltip.CompareHeader then
-                local compare = tooltip.CompareHeader
-
-                for i = 1, compare:GetNumRegions() do
-                    local region = select(i, compare:GetRegions())
-
-                    if region and region:GetObjectType() == "Texture" then
-                        region:SetVertexColor(unpack(self.SECONDARY_COLOR));
-                    end
+        if tt.CompareHeader then
+            for _, region in ipairs({tt.CompareHeader:GetRegions()}) do
+                if region:IsObjectType("Texture") then
+                    region:SetVertexColor(unpack(Theme.SECONDARY_COLOR))
                 end
             end
         end
     end
 
-    local tooltips = {GameTooltip, ItemRefTooltip}
-
-    for _, tooltip in pairs(tooltips) do
-        self:SecureHookScript(tooltip, "OnShow", function()
-            StyleTooltip(tooltip)
-        end)
-    end
-
-    tooltips = {"ShoppingTooltip", "ItemRefShoppingTooltip"}
-
-    for _, tooltipName in pairs(tooltips) do
-        local tooltip = _G[tooltipName]
-
-        for i = 1, 2 do
-            local tooltip = _G[tooltipName .. i]
-
-            if tooltip then
-                self:SecureHookScript(tooltip, "OnShow", function()
-                    StyleTooltip(tooltip)
-                end)
-            end
-        end
-    end
+    self:SecureHook("SharedTooltip_SetBackdropStyle", function(tt)
+        StyleTooltip(tt)
+    end)
 end
 
 function Theme:StyleBags()
@@ -728,7 +689,7 @@ function Theme:StyleGameMenu()
     self:SecureHookScript(GameMenuFrame, "OnShow", function(frame)
         local color = self.SECONDARY_COLOR
         local border = frame.Border
-        
+
         self:StyleNineSlice(border, color)
 
         local texs = {"CenterBG", "LeftBG", "RightBG"}
@@ -777,14 +738,33 @@ function Theme:StyleBg(frame, color)
 end
 
 function Theme:StyleTomTom()
-    local texs = {"LeftEdge", "RightEdge", "TopEdge", "BottomEdge", "TopLeftCorner", "TopRightCorner",
-                  "BottomLeftCorner", "BottomRightCorner"}
+    if C_AddOns.IsAddOnLoaded("TomTom") then
+        local texs = {"LeftEdge", "RightEdge", "TopEdge", "BottomEdge", "TopLeftCorner", "TopRightCorner",
+                      "BottomLeftCorner", "BottomRightCorner"}
 
-    for _, part in pairs(texs) do
-        local tex = TomTomBlock[part]
+        for _, part in pairs(texs) do
+            local tex = TomTomBlock[part]
 
-        if tex then
-            tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            if tex then
+                tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+            end
+        end
+    end
+end
+
+function Theme:StyleFrogskisGcdBar()
+    if C_AddOns.IsAddOnLoaded("FrogskisInstantCastBar") and FrogskisInstantBarFrame then
+        -- "supposedly" the border
+        local frame = select(4, FrogskisInstantBarFrame:GetChildren())
+
+        if frame and frame:IsObjectType("Frame") then
+            self:SecureHookScript(FrogskisInstantBarFrame, "OnShow", function(_)
+                for _, region in ipairs({frame:GetRegions()}) do
+                    if region and region:IsObjectType("Texture") then
+                        region:SetVertexColor(unpack(self.MAIN_COLOR))
+                    end
+                end
+            end)
         end
     end
 end
