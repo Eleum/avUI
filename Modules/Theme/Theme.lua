@@ -383,7 +383,13 @@ function Theme:StyleButton(button)
 end
 
 function Theme:StyleIconFrame(frame, scaleH, scaleW)
-    if not frame or not frame.Icon then
+    if not frame then
+        return
+    end
+
+    local icon = frame.Icon or frame.icon
+
+    if not icon then
         return
     end
 
@@ -397,13 +403,13 @@ function Theme:StyleIconFrame(frame, scaleH, scaleW)
     local border = frame.__avuiBorder
 
     border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
-    border:SetPoint("TOPLEFT", frame.Icon, "TOPLEFT", -scaleH, scaleW)
-    border:SetPoint("BOTTOMRIGHT", frame.Icon, "BOTTOMRIGHT", scaleH, -scaleW)
+    border:SetPoint("TOPLEFT", icon, "TOPLEFT", -scaleH, scaleW)
+    border:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", scaleH, -scaleW)
     border:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
 
     -- Apply mask to clip sharp corners on the icon
-    if frame.Icon.SetMask then
-        frame.Icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
+    if icon.SetMask then
+        icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
     end
 
     if frame.TempEnchantBorder then
@@ -691,7 +697,8 @@ end
 function Theme:StylePopups()
     StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
     StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    -- LFGDungeonReadyDialog
+    self:StyleNineSlice(LFGDungeonReadyDialog.Border, self.SECONDARY_COLOR)
+    self:StyleNineSlice(LFGDungeonReadyStatus.Border, self.SECONDARY_COLOR)
 end
 
 function Theme:StyleGameMenu()
