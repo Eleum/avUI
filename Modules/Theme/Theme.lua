@@ -240,8 +240,13 @@ function Theme:StylePlayerFrame()
 
     PlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 
-    self:SecureHookScript(PlayerCastingBarFrame, "OnEvent", function(frame, a)
+    self:SecureHookScript(PlayerCastingBarFrame, "OnEvent", function(frame)
+        if frame.Icon:IsShown() then 
+            return
+        end
+
         frame.Icon:Show()
+        self:StyleIconFrame(frame)
     end)
 end
 
@@ -311,19 +316,19 @@ end
 function Theme:StylePlayerAuras()
     for index, _ in pairs(BuffFrame.auraFrames) do
         local aura = select(index, BuffFrame.AuraContainer:GetChildren())
-        self:StyleAuraButton(aura)
+        self:StyleIconFrame(aura)
     end
 end
 
 function Theme:StyleTargetAuras()
     for aura, _ in TargetFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleAuraButton(aura)
+        self:StyleIconFrame(aura)
     end
 end
 
 function Theme:StyleFocusAuras()
     for aura, _ in FocusFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleAuraButton(aura)
+        self:StyleIconFrame(aura)
     end
 end
 
@@ -375,31 +380,29 @@ function Theme:StyleButton(button)
     end
 end
 
-function Theme:StyleAuraButton(aura)
-    -- Validate frame and icon exist
-    if not aura or not aura.Icon then
+function Theme:StyleIconFrame(frame)
+    if not frame or not frame.Icon then
         return
     end
 
-    -- Create and apply border texture
-    if not aura.myBorder then
-        aura.myBorder = aura:CreateTexture(nil, "OVERLAY")
+    if not frame.__avuiBorder then
+        frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
     end
 
-    local border = aura.myBorder
+    local border = frame.__avuiBorder
 
     border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
-    border:SetPoint("TOPLEFT", aura.Icon, "TOPLEFT", -1, 1)
-    border:SetPoint("BOTTOMRIGHT", aura.Icon, "BOTTOMRIGHT", 1, -1)
+    border:SetPoint("TOPLEFT", frame.Icon, "TOPLEFT", -1, 1)
+    border:SetPoint("BOTTOMRIGHT", frame.Icon, "BOTTOMRIGHT", 1, -1)
     border:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
 
     -- Apply mask to clip sharp corners on the icon
-    if aura.Icon.SetMask then
-        aura.Icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
+    if frame.Icon.SetMask then
+        frame.Icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
     end
 
-    if aura.TempEnchantBorder then
-        aura.TempEnchantBorder:Hide()
+    if frame.TempEnchantBorder then
+        frame.TempEnchantBorder:Hide()
     end
 end
 
@@ -683,6 +686,7 @@ end
 function Theme:StylePopups()
     StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
     StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    -- LFGDungeonReadyDialog
 end
 
 function Theme:StyleGameMenu()
