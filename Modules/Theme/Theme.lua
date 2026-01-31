@@ -241,7 +241,7 @@ function Theme:StylePlayerFrame()
     PlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 
     self:SecureHookScript(PlayerCastingBarFrame, "OnEvent", function(frame)
-        if frame.Icon:IsShown() then 
+        if frame.Icon:IsShown() then
             return
         end
 
@@ -626,6 +626,10 @@ end
 
 function Theme:StyleTooltips()
     local function StyleTooltip(tt)
+        if not tt then
+            return
+        end
+
         if tt.NineSlice then
             self:StyleNineSlice(tt.NineSlice, Theme.COLORS.BLACK)
         end
@@ -637,6 +641,13 @@ function Theme:StyleTooltips()
                 end
             end
         end
+    end
+
+    local tooltips = {GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
+                      GameSmallHeaderTooltip, LibDBIconTooltip}
+
+    for _, tt in pairs(tooltips) do
+        StyleTooltip(tt)
     end
 
     self:SecureHook("SharedTooltip_SetBackdropStyle", function(tt)
