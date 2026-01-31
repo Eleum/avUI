@@ -280,6 +280,7 @@ function Theme:StyleTargetFrame()
     StyleFrameContent()
 
     TargetFrameSpellBar.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+    self:StyleIconFrame(TargetFrameSpellBar)
 end
 
 function Theme:StyleFocusFrame()
@@ -303,6 +304,7 @@ function Theme:StyleFocusFrame()
     StyleFrameContent()
 
     FocusFrameSpellBar.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+    self:StyleIconFrame(FocusFrameSpellBar)
 end
 
 function Theme:StylePetFrame()
@@ -380,10 +382,13 @@ function Theme:StyleButton(button)
     end
 end
 
-function Theme:StyleIconFrame(frame)
+function Theme:StyleIconFrame(frame, scaleH, scaleW)
     if not frame or not frame.Icon then
         return
     end
+
+    scaleH = scaleH == nil and 1 or scaleH;
+    scaleW = scaleW == nil and 1 or scaleW;
 
     if not frame.__avuiBorder then
         frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
@@ -392,8 +397,8 @@ function Theme:StyleIconFrame(frame)
     local border = frame.__avuiBorder
 
     border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
-    border:SetPoint("TOPLEFT", frame.Icon, "TOPLEFT", -1, 1)
-    border:SetPoint("BOTTOMRIGHT", frame.Icon, "BOTTOMRIGHT", 1, -1)
+    border:SetPoint("TOPLEFT", frame.Icon, "TOPLEFT", -scaleH, scaleW)
+    border:SetPoint("BOTTOMRIGHT", frame.Icon, "BOTTOMRIGHT", scaleH, -scaleW)
     border:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
 
     -- Apply mask to clip sharp corners on the icon
