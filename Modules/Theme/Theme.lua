@@ -345,7 +345,7 @@ end
 
 function Theme:StyleObjectiveTrackers()
     local frames = {ObjectiveTrackerFrame, CampaignQuestObjectiveTracker, ScenarioObjectiveTracker,
-                    QuestObjectiveTracker, WorldQuestObjectiveTracker, AchievementObjectiveTracker,
+                    QuestObjectiveTracker, WorldQuestObjectiveTracker, BonusObjectiveTracker, AchievementObjectiveTracker,
                     ProfessionsRecipeTracker}
 
     for _, f in pairs(frames) do
