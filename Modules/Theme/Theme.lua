@@ -84,6 +84,7 @@ function Theme:ApplyTheme()
     self:StyleTooltips()
     self:StyleBags()
     self:StylePopups()
+    self:StyleMerchantFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -455,24 +456,6 @@ function Theme:StyleHealthBar(statusBar)
 end
 
 function Theme:StyleChatFrame()
-    local function StyleChatTabs()
-        local texs = {"Left", "Middle", "Right"}
-
-        for i = 1, NUM_CHAT_WINDOWS do
-            local frame = _G["ChatFrame" .. i .. "Tab"]
-
-            if frame then
-                for _, part in pairs(texs) do
-                    local tex = frame[part]
-
-                    if tex then
-                        tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
-                    end
-                end
-            end
-        end
-    end
-
     local function StyleChatEditBox()
         local texs = {ChatFrame1EditBoxLeft, ChatFrame1EditBoxMid, ChatFrame1EditBoxRight}
 
@@ -480,14 +463,20 @@ function Theme:StyleChatFrame()
             local tex = part
 
             if tex then
-                tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
+                tex:SetVertexColor(unpack(self.MAIN_COLOR))
             end
         end
     end
 
-    ChatFrame1Background:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
-    ChatFrame1ButtonFrameBackground:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
-    StyleChatTabs()
+    ChatFrame1Background:SetVertexColor(unpack(self.MAIN_COLOR))
+    ChatFrame1ButtonFrameBackground:SetVertexColor(unpack(self.MAIN_COLOR))
+
+    for i = 1, NUM_CHAT_WINDOWS do
+        local frame = _G["ChatFrame" .. i .. "Tab"]
+
+        self:StyleTabButton(frame)
+    end
+
     StyleChatEditBox()
 end
 
@@ -710,6 +699,7 @@ function Theme:StylePopups()
     StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
     self:StyleNineSlice(LFGDungeonReadyDialog.Border, self.SECONDARY_COLOR)
     self:StyleNineSlice(LFGDungeonReadyStatus.Border, self.SECONDARY_COLOR)
+    -- rch
 end
 
 function Theme:StyleGameMenu()
@@ -735,6 +725,8 @@ function Theme:StyleNineSlice(frame, color)
     if not frame then
         return
     end
+
+    frame = frame.NineSlice or frame
 
     local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
                   "BottomLeftCorner", "BottomRightCorner"}
@@ -792,6 +784,39 @@ function Theme:StyleFrogskisGcdBar()
                     end
                 end
             end)
+        end
+    end
+end
+
+function Theme:StyleMerchantFrame()
+    self:SecureHookScript(MerchantFrame, "OnShow", function(frame)
+        frame.Bg:SetVertexColor(unpack(self.MAIN_COLOR))
+        frame.Inset.Bg:SetVertexColor(unpack(self.MAIN_COLOR))
+
+        self:StyleNineSlice(frame, self.COLORS.BLACK)
+        self:StyleNineSlice(frame.Inset, self.SECONDARY_COLOR)
+
+        MerchantFrameBottomLeftBorder:SetVertexColor(unpack(self.SECONDARY_COLOR))
+        BuybackBG:SetVertexColor(unpack(self.MAIN_COLOR))
+
+        for i = 1, 2 do
+            local frame = _G["MerchantFrameTab" .. i]
+
+            self:StyleTabButton(frame)
+        end
+    end)
+end
+
+function Theme:StyleTabButton(frame)
+    if frame then
+        local texs = {"Left", "Middle", "Right"}
+
+        for _, part in pairs(texs) do
+            local tex = frame[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(self.MAIN_COLOR))
+            end
         end
     end
 end
