@@ -85,6 +85,7 @@ function Theme:ApplyTheme()
     self:StyleBags()
     self:StylePopups()
     self:StyleMerchantFrame()
+    self:StyleMirrorTimers()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -345,8 +346,8 @@ end
 
 function Theme:StyleObjectiveTrackers()
     local frames = {ObjectiveTrackerFrame, CampaignQuestObjectiveTracker, ScenarioObjectiveTracker,
-                    QuestObjectiveTracker, WorldQuestObjectiveTracker, BonusObjectiveTracker, AchievementObjectiveTracker,
-                    ProfessionsRecipeTracker}
+                    QuestObjectiveTracker, WorldQuestObjectiveTracker, BonusObjectiveTracker,
+                    AchievementObjectiveTracker, ProfessionsRecipeTracker}
 
     for _, f in pairs(frames) do
         local tex = f.Header.Background
@@ -805,6 +806,16 @@ function Theme:StyleMerchantFrame()
             self:StyleTabButton(frame)
         end
     end)
+end
+
+function Theme:StyleMirrorTimers()
+    -- breath, fatigue, ...
+
+    for _, frame in pairs({MirrorTimerContainer:GetChildren()}) do
+        if frame.Border then
+            frame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+        end
+    end
 end
 
 function Theme:StyleTabButton(frame)
