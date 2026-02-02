@@ -634,7 +634,7 @@ function Theme:StyleTooltips()
     end
 
     local tooltips = {GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
-                      GameSmallHeaderTooltip, LibDBIconTooltip}
+                      GameSmallHeaderTooltip, LibDBIconTooltip, QuestScrollFrame.CampaignTooltip}
 
     for _, tt in pairs(tooltips) do
         StyleTooltip(tt)
