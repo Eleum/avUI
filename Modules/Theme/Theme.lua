@@ -32,7 +32,9 @@ function Theme:OnEnable()
     self.events:RegisterEvent("PLAYER_TARGET_CHANGED")
     self.events:RegisterEvent("PLAYER_FOCUS_CHANGED")
     self.events:RegisterEvent("WEAPON_ENCHANT_CHANGED")
-    self.events:RegisterUnitEvent("UNIT_AURA", "player", "target", "focus")
+    self.events:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self.events:RegisterEvent("PLAYER_REGEN_ENABLED")
+    self.events:RegisterUnitEvent("UNIT_AURA", "player", "target", "focus", "party1", "party2")
 
     self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
         if event == "PLAYER_ENTERING_WORLD" then
@@ -43,6 +45,10 @@ function Theme:OnEnable()
             self:StyleTargetAuras()
         elseif event == "PLAYER_FOCUS_CHANGED" or (event == "UNIT_AURA" and unit == "focus") then
             self:StyleFocusAuras()
+            -- elseif event == "PLAYER_REGEN_DISABLED" then
+            --     self.InCombat = true
+            -- elseif event == "PLAYER_REGEN_ENABLED" then
+            --     self.InCombat = false
         end
     end)
 
@@ -86,6 +92,7 @@ function Theme:ApplyTheme()
     self:StylePopups()
     self:StyleMerchantFrame()
     self:StyleMirrorTimers()
+    self:StyleBankFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -211,6 +218,91 @@ function Theme:StyleCompactPartyFrame()
     end
 
     StyleBorderFrame()
+
+    self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame, auras)
+        local function HexToRGB(hex)
+            hex = gsub(hex, "#", "")
+            if string.len(hex) == 3 then
+                return (tonumber("0x" .. string.sub(hex, 1, 1)) * 17) / 255,
+                    (tonumber("0x" .. string.sub(hex, 2, 2)) * 17) / 255,
+                    (tonumber("0x" .. string.sub(hex, 3, 3)) * 17) / 255
+            elseif (string.len(hex) == 6) then
+                return {(tonumber("0x" .. string.sub(hex, 1, 2))) / 255,
+                        (tonumber("0x" .. string.sub(hex, 3, 4))) / 255, (tonumber("0x" .. string.sub(hex, 5, 6))) / 255}
+            end
+        end
+
+        if self.InCombat then
+            return
+        end
+
+        if frame and frame.buffFrames then
+            for _, button in ipairs(frame.buffFrames) do
+                self:StyleIconFrame(button)
+            end
+        end
+        if auras and auras.addedAuras then
+            for _, aura in pairs(auras.addedAuras) do
+                local secret = issecretvalue(aura.spellId)
+
+                if secret then
+                    return
+                end
+
+                if aura.spellId == 194384 and not frame.__avuiAtonementInstanceId then
+                    local name = frame:GetName()
+
+                    if name then
+                        local textString = _G[name .. "StatusText"]
+
+                        if textString and textString:IsShown() then
+                            frame.__avuiAtonementInstanceId = aura.auraInstanceID
+
+                            local font, size, flags = textString:GetFont()
+
+                            frame.__avuiStatusTextFont = {font, size, flags}
+                            frame.__avuiStatusTextColor = {textString:GetTextColor()}
+
+                            textString:SetFont(font, size, "OUTLINE")
+                            textString:SetTextColor(unpack(HexToRGB("#ffd447")))
+                        end
+                    end
+
+                    break
+                end
+            end
+        end
+        if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
+            for _, aura in pairs(auras.removedAuraInstanceIDs) do
+                if aura == frame.__avuiAtonementInstanceId then
+                    frame.__avuiAtonementInstanceId = nil
+
+                    local name = frame:GetName()
+
+                    if name then
+                        local textFrame = _G[name .. "StatusText"]
+
+                        if textFrame then
+                            local color = frame.__avuiStatusTextColor or {0.5, 0.5, 0.5}
+
+                            if frame.__avuiStatusTextFont then
+                                textFrame:SetFont(unpack(frame.__avuiStatusTextFont))
+                            else
+                                textFrame:SetFontObject(GameFontDisable)
+                            end
+
+                            textFrame:SetTextColor(unpack(color))
+                        end
+                    end
+
+                    frame.__avuiStatusTextFont = nil
+                    frame.__avuiStatusTextColor = nil
+
+                    break
+                end
+            end
+        end
+    end)
 end
 
 function Theme:StylePlayerFrame()
@@ -595,17 +687,10 @@ function Theme:StyleCharacterFrame()
     end
 
     local function StyleTabs()
-        local tabs = {"CharacterFrameTab1", "CharacterFrameTab2", "CharacterFrameTab3"}
-        local parts = {"Left", "Middle", "Right"}
+        local frames = {CharacterFrameTab1, CharacterFrameTab2, CharacterFrameTab3}
 
-        for _, tab in pairs(tabs) do
-            for _, part in pairs(parts) do
-                local tex = _G[tab][part]
-
-                if tex then
-                    tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
-                end
-            end
+        for _, frame in pairs(frames) do
+            self:StyleTabButton(frame)
         end
     end
 
@@ -648,13 +733,7 @@ end
 function Theme:StyleBags()
     local function StyleBagSlots(frame, color)
         self:SecureHookScript(frame, "OnUpdate", function(f)
-            for button, _ in f.itemButtonPool:EnumerateActive() do
-                local tex = button.NormalTexture
-
-                if tex then
-                    tex:SetVertexColor(unpack(self.MAIN_COLOR));
-                end
-            end
+            self:StyleItemButtonPool(f)
         end)
     end
 
@@ -818,15 +897,53 @@ function Theme:StyleMirrorTimers()
     end
 end
 
-function Theme:StyleTabButton(frame)
-    if frame then
+function Theme:StyleBankFrame()
+    BankFrame.Background:SetVertexColor(unpack(self.MAIN_COLOR))
+    BankFrameBg:SetVertexColor(unpack(self.MAIN_COLOR))
+    self:StyleNineSlice(BankFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(BankPanel, self.SECONDARY_COLOR)
+
+    for frame, _ in BankFrame.TabSystem.tabPool:EnumerateActive() do
+        self:StyleTabButton(frame)
+    end
+
+    self:SecureHookScript(BankPanel, "OnShow", function(frame)
+        for f, _ in frame.bankTabPool:EnumerateActive() do
+            if f.Border then
+                f.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+                self:StyleIconFrame(f)
+            end
+        end
+
+        local purchase = BankPanel.PurchaseTab
+        purchase.Border:SetVertexColor(unpack(self.MAIN_COLOR))
+        self:StyleIconFrame(purchase)
+
+        self:StyleItemButtonPool(frame)
+    end)
+end
+
+function Theme:StyleTabButton(button)
+    if button then
         local texs = {"Left", "Middle", "Right"}
 
         for _, part in pairs(texs) do
-            local tex = frame[part]
+            local tex = button[part]
 
             if tex then
-                tex:SetVertexColor(unpack(self.MAIN_COLOR))
+                tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
+            end
+        end
+    end
+end
+
+function Theme:StyleItemButtonPool(frame)
+    if frame then
+        for button, _ in frame.itemButtonPool:EnumerateActive() do
+            local tex = button.NormalTexture
+
+            if tex then
+                tex:SetVertexColor(unpack(self.MAIN_COLOR));
             end
         end
     end
