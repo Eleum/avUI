@@ -34,6 +34,7 @@ function Theme:OnEnable()
     self.events:RegisterEvent("WEAPON_ENCHANT_CHANGED")
     self.events:RegisterEvent("PLAYER_REGEN_DISABLED")
     self.events:RegisterEvent("PLAYER_REGEN_ENABLED")
+    self.events:RegisterEvent("ADDON_LOADED")
     self.events:RegisterUnitEvent("UNIT_AURA", "player", "target", "focus", "party1", "party2")
 
     self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
@@ -49,6 +50,8 @@ function Theme:OnEnable()
             --     self.InCombat = true
             -- elseif event == "PLAYER_REGEN_ENABLED" then
             --     self.InCombat = false
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_PlayerSpells" then
+            self:StylePlayerSpellsFrame()
         end
     end)
 
@@ -921,6 +924,23 @@ function Theme:StyleBankFrame()
 
         self:StyleItemButtonPool(frame)
     end)
+end
+
+function Theme:StylePlayerSpellsFrame()
+    local function StyleFrame(frame)
+        self:StyleNineSlice(frame, self.MAIN_COLOR)
+        frame.TalentsFrame.BottomBar:SetVertexColor(unpack(self.MAIN_COLOR))
+    end
+
+    local frame = PlayerSpellsFrame
+
+    if frame then
+        StyleFrame(frame)
+    else
+        self:SecureHook(PlayerSpellsFrameMixin, "OnLoad", function(frame)
+            StyleFrame(frame)
+        end)
+    end
 end
 
 function Theme:StyleTabButton(button)
