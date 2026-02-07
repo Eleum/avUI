@@ -96,6 +96,7 @@ function Theme:ApplyTheme()
     self:StyleMerchantFrame()
     self:StyleMirrorTimers()
     self:StyleBankFrame()
+    self:StylePaladinPowerBarFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -221,91 +222,6 @@ function Theme:StyleCompactPartyFrame()
     end
 
     StyleBorderFrame()
-
-    self:SecureHook("CompactUnitFrame_UpdateAuras", function(frame, auras)
-        local function HexToRGB(hex)
-            hex = gsub(hex, "#", "")
-            if string.len(hex) == 3 then
-                return (tonumber("0x" .. string.sub(hex, 1, 1)) * 17) / 255,
-                    (tonumber("0x" .. string.sub(hex, 2, 2)) * 17) / 255,
-                    (tonumber("0x" .. string.sub(hex, 3, 3)) * 17) / 255
-            elseif (string.len(hex) == 6) then
-                return {(tonumber("0x" .. string.sub(hex, 1, 2))) / 255,
-                        (tonumber("0x" .. string.sub(hex, 3, 4))) / 255, (tonumber("0x" .. string.sub(hex, 5, 6))) / 255}
-            end
-        end
-
-        if self.InCombat then
-            return
-        end
-
-        if frame and frame.buffFrames then
-            for _, button in ipairs(frame.buffFrames) do
-                self:StyleIconFrame(button)
-            end
-        end
-        if auras and auras.addedAuras then
-            for _, aura in pairs(auras.addedAuras) do
-                local secret = issecretvalue(aura.spellId)
-
-                if secret then
-                    return
-                end
-
-                if aura.spellId == 194384 and not frame.__avuiAtonementInstanceId then
-                    local name = frame:GetName()
-
-                    if name then
-                        local textString = _G[name .. "StatusText"]
-
-                        if textString and textString:IsShown() then
-                            frame.__avuiAtonementInstanceId = aura.auraInstanceID
-
-                            local font, size, flags = textString:GetFont()
-
-                            frame.__avuiStatusTextFont = {font, size, flags}
-                            frame.__avuiStatusTextColor = {textString:GetTextColor()}
-
-                            textString:SetFont(font, size, "OUTLINE")
-                            textString:SetTextColor(unpack(HexToRGB("#ffd447")))
-                        end
-                    end
-
-                    break
-                end
-            end
-        end
-        if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
-            for _, aura in pairs(auras.removedAuraInstanceIDs) do
-                if aura == frame.__avuiAtonementInstanceId then
-                    frame.__avuiAtonementInstanceId = nil
-
-                    local name = frame:GetName()
-
-                    if name then
-                        local textFrame = _G[name .. "StatusText"]
-
-                        if textFrame then
-                            local color = frame.__avuiStatusTextColor or {0.5, 0.5, 0.5}
-
-                            if frame.__avuiStatusTextFont then
-                                textFrame:SetFont(unpack(frame.__avuiStatusTextFont))
-                            else
-                                textFrame:SetFontObject(GameFontDisable)
-                            end
-
-                            textFrame:SetTextColor(unpack(color))
-                        end
-                    end
-
-                    frame.__avuiStatusTextFont = nil
-                    frame.__avuiStatusTextColor = nil
-
-                    break
-                end
-            end
-        end
-    end)
 end
 
 function Theme:StylePlayerFrame()
@@ -930,6 +846,12 @@ function Theme:StylePlayerSpellsFrame()
     local function StyleFrame(frame)
         self:StyleNineSlice(frame, self.MAIN_COLOR)
         frame.TalentsFrame.BottomBar:SetVertexColor(unpack(self.MAIN_COLOR))
+
+        for f, _ in frame.TabSystem.tabPool:EnumerateActive() do
+            self.StyleTabButton(f)
+        end
+
+        self:StyleNineSlice(HeroTalentsSelectionDialog, self.MAIN_COLOR)
     end
 
     local frame = PlayerSpellsFrame
@@ -940,6 +862,17 @@ function Theme:StylePlayerSpellsFrame()
         self:SecureHook(PlayerSpellsFrameMixin, "OnLoad", function(frame)
             StyleFrame(frame)
         end)
+    end
+end
+
+function Theme:StylePaladinPowerBarFrame()
+    local frames = {PaladinPowerBarFrame, prdClassFrame}
+
+    for _, frame in pairs(frames) do
+        if frame then
+            frame.Background:SetVertexColor(unpack(self.SECONDARY_COLOR))
+            frame.ActiveTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
+        end
     end
 end
 
