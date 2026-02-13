@@ -869,8 +869,10 @@ function Theme:StylePaladinPowerBarFrame()
     local frames = {PaladinPowerBarFrame, prdClassFrame}
 
     for _, frame in pairs(frames) do
-        if frame then
+        if frame and frame.Background then
             frame.Background:SetVertexColor(unpack(self.SECONDARY_COLOR))
+        end
+        if frame and frame.ActiveTexture then
             frame.ActiveTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
         end
     end
