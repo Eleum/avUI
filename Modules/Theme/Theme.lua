@@ -97,6 +97,7 @@ function Theme:ApplyTheme()
     self:StyleMirrorTimers()
     self:StyleBankFrame()
     self:StylePaladinPowerBarFrame()
+    self:StylePVEFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -878,6 +879,28 @@ function Theme:StylePaladinPowerBarFrame()
     end
 end
 
+function Theme:StylePVEFrame()
+    self:StyleNineSlice(PVEFrame, self.MAIN_COLOR)
+    self:StyleTextureRegions(PVEFrame.shadows, self.SECONDARY_COLOR)
+    
+    for _, frame in pairs(PVEFrame.Tabs) do
+        self:StyleTabButton(frame)
+    end
+    
+    PVEFrameBg:SetVertexColor(unpack(self.MAIN_COLOR))
+    self:StyleNineSlice(PVEFrameLeftInset, self.SECONDARY_COLOR)
+
+    self:StyleNineSlice(LFDParentFrameInset, self.SECONDARY_COLOR)
+    LFDParentFrameRoleBackground:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    RaidFinderFrameRoleInset.Bg:SetVertexColor(unpack(self.MAIN_COLOR))
+    self:StyleNineSlice(RaidFinderFrameRoleInset, self.SECONDARY_COLOR)
+
+    self:StyleNineSlice(RaidFinderFrameBottomInset, self.SECONDARY_COLOR)
+
+    self:StyleNineSlice(LFGListFrame.CategorySelection.Inset, self.SECONDARY_COLOR)
+end
+
 function Theme:StyleTabButton(button)
     if button then
         local texs = {"Left", "Middle", "Right"}
@@ -899,6 +922,16 @@ function Theme:StyleItemButtonPool(frame)
 
             if tex then
                 tex:SetVertexColor(unpack(self.MAIN_COLOR));
+            end
+        end
+    end
+end
+
+function Theme:StyleTextureRegions(frame, color)
+    if frame and frame.GetRegions then
+        for _, region in ipairs({frame:GetRegions()}) do
+            if region and region:IsObjectType("Texture") then
+                region:SetVertexColor(unpack(color))
             end
         end
     end
