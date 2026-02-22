@@ -624,17 +624,17 @@ function Theme:StyleCharacterFrame()
 end
 
 function Theme:StyleTooltips()
-    local function StyleTooltip(tt)
-        if not tt then
+    local function StyleTooltip(frame)
+        if not frame then
             return
         end
 
-        if tt.NineSlice then
-            self:StyleNineSlice(tt.NineSlice, Theme.COLORS.BLACK)
+        if frame.NineSlice then
+            self:StyleNineSlice(frame.NineSlice, Theme.COLORS.BLACK)
         end
 
-        if tt.CompareHeader then
-            for _, region in ipairs({tt.CompareHeader:GetRegions()}) do
+        if frame.CompareHeader then
+            for _, region in ipairs({frame.CompareHeader:GetRegions()}) do
                 if region:IsObjectType("Texture") then
                     region:SetVertexColor(unpack(Theme.SECONDARY_COLOR))
                 end
@@ -643,9 +643,10 @@ function Theme:StyleTooltips()
     end
 
     local tooltips = {GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
-                      GameSmallHeaderTooltip, LibDBIconTooltip, QuestScrollFrame.CampaignTooltip}
+                      GameSmallHeaderTooltip, LibDBIconTooltip, QuestScrollFrame.CampaignTooltip,
+                      QuestScrollFrame.StoryTooltip}
 
-    for _, tt in pairs(tooltips) do
+    for _, tt in ipairs(tooltips) do
         StyleTooltip(tt)
     end
 
