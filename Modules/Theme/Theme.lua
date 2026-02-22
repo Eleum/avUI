@@ -35,6 +35,7 @@ function Theme:OnEnable()
     self.events:RegisterEvent("PLAYER_REGEN_DISABLED")
     self.events:RegisterEvent("PLAYER_REGEN_ENABLED")
     self.events:RegisterEvent("ADDON_LOADED")
+    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
     self.events:RegisterUnitEvent("UNIT_AURA", "player", "target", "focus", "party1", "party2")
 
     self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
@@ -44,6 +45,7 @@ function Theme:OnEnable()
             self:StylePlayerAuras()
         elseif event == "PLAYER_TARGET_CHANGED" or (event == "UNIT_AURA" and unit == "target") then
             self:StyleTargetAuras()
+            self:StyleAllNameplateAlphas()
         elseif event == "PLAYER_FOCUS_CHANGED" or (event == "UNIT_AURA" and unit == "focus") then
             self:StyleFocusAuras()
             -- elseif event == "PLAYER_REGEN_DISABLED" then
@@ -52,6 +54,8 @@ function Theme:OnEnable()
             --     self.InCombat = false
         elseif event == "ADDON_LOADED" and unit == "Blizzard_PlayerSpells" then
             self:StylePlayerSpellsFrame()
+        elseif event == "NAME_PLATE_UNIT_ADDED" then
+            self:StyleNameplateForUnit(unit)
         end
     end)
 
@@ -882,11 +886,11 @@ end
 function Theme:StylePVEFrame()
     self:StyleNineSlice(PVEFrame, self.MAIN_COLOR)
     self:StyleTextureRegions(PVEFrame.shadows, self.SECONDARY_COLOR)
-    
+
     for _, frame in pairs(PVEFrame.Tabs) do
         self:StyleTabButton(frame)
     end
-    
+
     PVEFrameBg:SetVertexColor(unpack(self.MAIN_COLOR))
     self:StyleNineSlice(PVEFrameLeftInset, self.SECONDARY_COLOR)
 
@@ -899,6 +903,53 @@ function Theme:StylePVEFrame()
     self:StyleNineSlice(RaidFinderFrameBottomInset, self.SECONDARY_COLOR)
 
     self:StyleNineSlice(LFGListFrame.CategorySelection.Inset, self.SECONDARY_COLOR)
+end
+
+function Theme:StyleNameplateForUnit(unit)
+    local function StyleNameplate(nameplate)
+        local frame = nameplate.UnitFrame and nameplate.UnitFrame.HealthBarsContainer or nil
+        local bar = frame.healthBar or nil
+
+        if bar and bar.bgTexture then
+            bar.bgTexture:SetVertexColor(unpack(self.MAIN_COLOR))
+        end
+    end
+
+    local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
+
+    if not nameplate then
+        return
+    end
+
+    StyleNameplate(nameplate)
+    self:StyleNameplateAlpha(nameplate)
+end
+
+function Theme:StyleNameplateAlpha(nameplate)
+    if not nameplate or not nameplate.unitToken or not nameplate.UnitFrame then
+        return
+    end
+
+    local unit = nameplate.unitToken
+    local frame = nameplate.UnitFrame
+
+    if UnitExists("target") and not UnitIsDeadOrGhost("target") then
+        if UnitIsUnit(unit, "target") then
+            frame:SetAlpha(1)
+        else
+            frame:SetAlpha(0.75)
+        end
+    else
+        frame:SetAlpha(1)
+    end
+end
+
+function Theme:StyleAllNameplateAlphas()
+    local nameplates = C_NamePlate.GetNamePlates()
+
+    for _, nameplate in ipairs(nameplates) do
+        self:StyleNameplateAlpha(nameplate)
+    end
 end
 
 function Theme:StyleTabButton(button)
