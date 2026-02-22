@@ -48,19 +48,11 @@ function Theme:OnEnable()
             self:StyleAllNameplateAlphas()
         elseif event == "PLAYER_FOCUS_CHANGED" or (event == "UNIT_AURA" and unit == "focus") then
             self:StyleFocusAuras()
-            -- elseif event == "PLAYER_REGEN_DISABLED" then
-            --     self.InCombat = true
-            -- elseif event == "PLAYER_REGEN_ENABLED" then
-            --     self.InCombat = false
         elseif event == "ADDON_LOADED" and unit == "Blizzard_PlayerSpells" then
             self:StylePlayerSpellsFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
-    end)
-
-    self:SecureHookScript(PlayerFrame, "OnUpdate", function()
-        self:StylePlayerStatus()
     end)
 
     self:SecureHook("UnitFrameHealthBar_Update", function(statusBar)
@@ -630,16 +622,10 @@ function Theme:StyleTooltips()
         end
 
         if frame.NineSlice then
-            self:StyleNineSlice(frame.NineSlice, Theme.COLORS.BLACK)
+            self:StyleNineSlice(frame.NineSlice, self.COLORS.BLACK)
         end
 
-        if frame.CompareHeader then
-            for _, region in ipairs({frame.CompareHeader:GetRegions()}) do
-                if region:IsObjectType("Texture") then
-                    region:SetVertexColor(unpack(Theme.SECONDARY_COLOR))
-                end
-            end
-        end
+        self:StyleTextureRegions(frame.CompareHeader, self.SECONDARY_COLOR)
     end
 
     local tooltips = {GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
@@ -702,9 +688,96 @@ end
 function Theme:StylePopups()
     StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
     StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    self:StyleLFDFrames()
+    -- rch
+end
+
+function Theme:StyleLFDFrames()
+    local function AddDungeonReadyTimer()
+        -- vibe coded
+        local bar
+        local duration = 40 -- default dungeon ready timer
+        local startTime = 0
+        local active = false
+        local dialog = LFGDungeonReadyDialog
+
+        local function CreateTimerBar()
+            if bar then
+                return
+            end
+
+            bar = CreateFrame("StatusBar", nil, dialog)
+
+            local anchor = dialog.Border.Bg;
+            local barHeight = 2
+
+            bar:SetSize(anchor:GetWidth(), barHeight)
+            bar:SetPoint("CENTER", anchor, "BOTTOM", 0, barHeight / 2)
+
+            bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
+            bar:SetStatusBarColor(0.1, 0.4, 1, 1) -- Blue
+
+            -- Background
+            local bg = bar:CreateTexture(nil, "BACKGROUND")
+            bg:SetAllPoints(true)
+            bg:SetColorTexture(0, 0, 0, 0.5)
+
+            -- Center text
+            bar.text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            bar.text:SetPoint("CENTER", bar, "CENTER", 0, 0)
+        end
+
+        local function StartTimer()
+            CreateTimerBar()
+
+            duration = GetLFGReadyCheckUpdate() or 40
+            startTime = GetTime()
+            active = true
+
+            bar:SetMinMaxValues(0, duration)
+            bar:SetValue(duration)
+            bar:Show()
+        end
+
+        local function StopTimer()
+            active = false
+            if bar then
+                bar:Hide()
+            end
+        end
+
+        -- OnUpdate handler
+        local frame = CreateFrame("Frame")
+        
+        frame:SetScript("OnUpdate", function(self, elapsed)
+            if not active then
+                return
+            end
+
+            local remaining = duration - (GetTime() - startTime)
+
+            if remaining <= 0 then
+                StopTimer()
+                return
+            end
+
+            bar:SetValue(remaining)
+            bar.text:SetFormattedText("%.0f", remaining)
+        end)
+
+        -- Hook into dungeon ready popup
+        self:SecureHookScript(dialog, "OnShow", function()
+            StartTimer()
+        end)
+
+        self:SecureHookScript(dialog, "OnHide", function()
+            StopTimer()
+        end)
+    end
+
     self:StyleNineSlice(LFGDungeonReadyDialog.Border, self.SECONDARY_COLOR)
     self:StyleNineSlice(LFGDungeonReadyStatus.Border, self.SECONDARY_COLOR)
-    -- rch
+    AddDungeonReadyTimer()
 end
 
 function Theme:StyleGameMenu()
