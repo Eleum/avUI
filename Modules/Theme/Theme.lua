@@ -94,6 +94,7 @@ function Theme:ApplyTheme()
     self:StyleBankFrame()
     self:StylePaladinPowerBarFrame()
     self:StylePVEFrame()
+    self:StyleItemTextFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -1020,6 +1021,12 @@ function Theme:StyleAllNameplateAlphas()
     for _, nameplate in ipairs(nameplates) do
         self:StyleNameplateAlpha(nameplate)
     end
+end
+
+function Theme:StyleItemTextFrame()
+    self:StyleNineSlice(ItemTextFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(ItemTextFrameInset, self.SECONDARY_COLOR)
+    ItemTextFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
 
 function Theme:StyleTabButton(button)
