@@ -686,20 +686,15 @@ function Theme:StyleBags()
 end
 
 function Theme:StylePopups()
-    StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    self:StyleLFDFrames()
-    -- rch
-end
+    local function AddActivityReadyTimer(dialog)
+        if not dialog then
+            return
+        end
 
-function Theme:StyleLFDFrames()
-    local function AddDungeonReadyTimer()
-        -- vibe coded
         local bar
         local duration = 40 -- default dungeon ready timer
         local startTime = 0
         local active = false
-        local dialog = LFGDungeonReadyDialog
 
         local function CreateTimerBar()
             if bar then
@@ -746,9 +741,8 @@ function Theme:StyleLFDFrames()
             end
         end
 
-        -- OnUpdate handler
         local frame = CreateFrame("Frame")
-        
+
         frame:SetScript("OnUpdate", function(self, elapsed)
             if not active then
                 return
@@ -765,7 +759,6 @@ function Theme:StyleLFDFrames()
             bar.text:SetFormattedText("%.0f", remaining)
         end)
 
-        -- Hook into dungeon ready popup
         self:SecureHookScript(dialog, "OnShow", function()
             StartTimer()
         end)
@@ -775,9 +768,12 @@ function Theme:StyleLFDFrames()
         end)
     end
 
+    StaticPopup1.BG.Top:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    StaticPopup1.BG.Bottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
     self:StyleNineSlice(LFGDungeonReadyDialog.Border, self.SECONDARY_COLOR)
     self:StyleNineSlice(LFGDungeonReadyStatus.Border, self.SECONDARY_COLOR)
-    AddDungeonReadyTimer()
+    AddActivityReadyTimer(LFGDungeonReadyDialog)
+    -- rch
 end
 
 function Theme:StyleGameMenu()
