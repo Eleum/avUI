@@ -26,3 +26,4 @@ Modules\UnitFrames\Defensives.lua
 Modules\UnitFrames\Health.lua
 Modules\Nameplates\Mouseover.lua
 Modules\Nameplates\Opacity.lua
+Modules\Nameplates\Execute.lua
