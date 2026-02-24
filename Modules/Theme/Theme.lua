@@ -776,7 +776,7 @@ function Theme:StyleMerchantFrame()
         frame.Bg:SetVertexColor(unpack(self.MAIN_COLOR))
         frame.Inset.Bg:SetVertexColor(unpack(self.MAIN_COLOR))
 
-        self:StyleNineSlice(frame, self.COLORS.BLACK)
+        self:StyleNineSlice(frame, self.MAIN_COLOR)
         self:StyleNineSlice(frame.Inset, self.SECONDARY_COLOR)
 
         MerchantFrameBottomLeftBorder:SetVertexColor(unpack(self.SECONDARY_COLOR))
@@ -911,7 +911,7 @@ end
 
 function Theme:StyleGossipFrame()
     self:StyleNineSlice(GossipFrame, self.MAIN_COLOR)
-    self:StyleNineSlice(GossipFrame, self.SECONDARY_COLOR)
+    self:StyleNineSlice(GossipFrameInset, self.SECONDARY_COLOR)
     GossipFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
 
