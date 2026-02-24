@@ -94,6 +94,7 @@ function Theme:ApplyTheme()
     self:StylePaladinPowerBarFrame()
     self:StylePVEFrame()
     self:StyleItemTextFrame()
+    self:StyleGossipFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -260,15 +261,6 @@ function Theme:StylePlayerFrame()
     end)
 end
 
-function Theme:StylePlayerStatus()
-    local tex = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture
-
-    if tex then
-        local r, g, b, a = tex:GetVertexColor()
-        tex:SetVertexColor(r, g, b, a * 0.25)
-    end
-end
-
 function Theme:StyleTargetFrame()
     local function StyleFrame()
         local tex = TargetFrame.TargetFrameContainer.FrameTexture
@@ -375,55 +367,6 @@ function Theme:StyleStatusTrackingBars()
         if tex then
             tex:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
         end
-    end
-end
-
-function Theme:StyleButton(button)
-    if button.NormalTexture then
-        button.NormalTexture:SetVertexColor(unpack(self.MAIN_COLOR))
-    end
-
-    if button.PushedTexture then
-        button.PushedTexture:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
-    end
-
-    if button.HighlightTexture then
-        button.HighlightTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    end
-end
-
-function Theme:StyleIconFrame(frame, scaleH, scaleW)
-    if not frame then
-        return
-    end
-
-    local icon = frame.Icon or frame.icon
-
-    if not icon then
-        return
-    end
-
-    scaleH = scaleH == nil and 1 or scaleH;
-    scaleW = scaleW == nil and 1 or scaleW;
-
-    if not frame.__avuiBorder then
-        frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
-    end
-
-    local border = frame.__avuiBorder
-
-    border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
-    border:SetPoint("TOPLEFT", icon, "TOPLEFT", -scaleH, scaleW)
-    border:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", scaleH, -scaleW)
-    border:SetVertexColor(unpack(self.COLORS.DARK_GRAY))
-
-    -- Apply mask to clip sharp corners on the icon
-    if icon.SetMask then
-        icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
-    end
-
-    if frame.TempEnchantBorder then
-        frame.TempEnchantBorder:Hide()
     end
 end
 
@@ -795,41 +738,6 @@ function Theme:StyleGameMenu()
     end)
 end
 
-function Theme:StyleNineSlice(frame, color)
-    if not frame then
-        return
-    end
-
-    frame = frame.NineSlice or frame
-
-    local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
-                  "BottomLeftCorner", "BottomRightCorner"}
-
-    for _, part in pairs(texs) do
-        local tex = frame[part]
-
-        if tex then
-            tex:SetVertexColor(unpack(color));
-        end
-    end
-end
-
-function Theme:StyleBg(frame, color)
-    if not frame then
-        return
-    end
-
-    local texs = {"TopSection", "BottomEdge", "BottomLeft", "BottomRight"}
-
-    for _, part in pairs(texs) do
-        local tex = frame[part]
-
-        if tex then
-            tex:SetVertexColor(unpack(color));
-        end
-    end
-end
-
 function Theme:StyleTomTom()
     if C_AddOns.IsAddOnLoaded("TomTom") then
         local texs = {"LeftEdge", "RightEdge", "TopEdge", "BottomEdge", "TopLeftCorner", "TopRightCorner",
@@ -1000,6 +908,61 @@ function Theme:StyleItemTextFrame()
     ItemTextFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
 
+function Theme:StyleGossipFrame()
+    self:StyleNineSlice(GossipFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(GossipFrame, self.SECONDARY_COLOR)
+    GossipFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleButton(button)
+    if button.NormalTexture then
+        button.NormalTexture:SetVertexColor(unpack(self.MAIN_COLOR))
+    end
+
+    if button.PushedTexture then
+        button.PushedTexture:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    end
+
+    if button.HighlightTexture then
+        button.HighlightTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    end
+end
+
+function Theme:StyleIconFrame(frame, scaleH, scaleW)
+    if not frame then
+        return
+    end
+
+    local icon = frame.Icon or frame.icon
+
+    if not icon then
+        return
+    end
+
+    scaleH = scaleH == nil and 1 or scaleH;
+    scaleW = scaleW == nil and 1 or scaleW;
+
+    if not frame.__avuiBorder then
+        frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
+    end
+
+    local border = frame.__avuiBorder
+
+    border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
+    border:SetPoint("TOPLEFT", icon, "TOPLEFT", -scaleH, scaleW)
+    border:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", scaleH, -scaleW)
+    border:SetVertexColor(unpack(self.MAIN_COLOR))
+
+    -- Apply mask to clip sharp corners on the icon
+    if icon.SetMask then
+        icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
+    end
+
+    if frame.TempEnchantBorder then
+        frame.TempEnchantBorder:Hide()
+    end
+end
+
 function Theme:StyleTabButton(button)
     if button then
         local texs = {"Left", "Middle", "Right"}
@@ -1032,6 +995,41 @@ function Theme:StyleTextureRegions(frame, color)
             if region and region:IsObjectType("Texture") then
                 region:SetVertexColor(unpack(color))
             end
+        end
+    end
+end
+
+function Theme:StyleNineSlice(frame, color)
+    if not frame then
+        return
+    end
+
+    frame = frame.NineSlice or frame
+
+    local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+                  "BottomLeftCorner", "BottomRightCorner"}
+
+    for _, part in pairs(texs) do
+        local tex = frame[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(color));
+        end
+    end
+end
+
+function Theme:StyleBg(frame, color)
+    if not frame then
+        return
+    end
+
+    local texs = {"TopSection", "BottomEdge", "BottomLeft", "BottomRight"}
+
+    for _, part in pairs(texs) do
+        local tex = frame[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(color));
         end
     end
 end

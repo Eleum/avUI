@@ -1,4 +1,5 @@
 local Defensives = avUI:NewModule("avUI.UnitFrames.Defensives", "AceHook-3.0")
+local Theme = avUI:GetModule("avUI.Theme")
 
 Defensives:Enable()
 
@@ -13,30 +14,29 @@ end
 
 function Defensives:OnDisable()
     self:UnhookAll()
-    self:Restore()
 end
 
 function Defensives:ConfigureDefensives(frame)
     if not frame or not frame.unit or UnitInRaid(frame.unit) or not frame.CenterDefensiveBuff or
-        frame.CenterDefensiveBuff:IsForbidden() then
+        frame.CenterDefensiveBuff:IsForbidden() or frame.__avuiDefensiveBuff then
         return
     end
 
-    local def = frame.CenterDefensiveBuff;
-    local point, _, relativePoint = def:GetPoint(1);
+    local buff = frame.CenterDefensiveBuff;
+    local point, _, relativePoint = buff:GetPoint(1);
 
-    if (point == "LEFT" and relativePoint == "LEFT") then
-        return
+    buff:ClearPoint("LEFT")
+    buff:SetPoint("LEFT", frame, "LEFT", 0, 0)
+    buff:SetScale(0.75)
+
+    if not buff.__avuiBorder then
+        buff.__avuiBorder = buff:CreateTexture(nil, "OVERLAY")
+
+        local border = buff.__avuiBorder
+
+        border:SetAtlas("UI-HUD-CoolDownManager-Debuff-Default")
+        border:SetAllPoints(buff)
     end
 
-    def:ClearPoint("LEFT")
-    def:SetPoint("LEFT", frame, "LEFT", -20, 0)
-
-    local scale = 0.75
-
-    if (def:GetScale() == scale) then
-        return
-    end
-
-    def:SetScale(scale)
+    frame.__avuiDefensiveBuff = true
 end
