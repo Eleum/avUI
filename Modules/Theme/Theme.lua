@@ -95,6 +95,7 @@ function Theme:ApplyTheme()
     self:StylePVEFrame()
     self:StyleItemTextFrame()
     self:StyleGossipFrame()
+    self:StyleDressUpFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -912,6 +913,12 @@ function Theme:StyleGossipFrame()
     self:StyleNineSlice(GossipFrame, self.MAIN_COLOR)
     self:StyleNineSlice(GossipFrame, self.SECONDARY_COLOR)
     GossipFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleDressUpFrame()
+    self:StyleNineSlice(DressUpFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(DressUpFrameInset, self.SECONDARY_COLOR)
+    DressUpFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
 
 function Theme:StyleButton(button)
