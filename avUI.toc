@@ -24,3 +24,5 @@ Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
 Modules\UnitFrames\Defensives.lua
 Modules\UnitFrames\Health.lua
+Modules\Nameplates\Mouseover.lua
+Modules\Nameplates\Opacity.lua

@@ -45,7 +45,6 @@ function Theme:OnEnable()
             self:StylePlayerAuras()
         elseif event == "PLAYER_TARGET_CHANGED" or (event == "UNIT_AURA" and unit == "target") then
             self:StyleTargetAuras()
-            self:StyleAllNameplateAlphas()
         elseif event == "PLAYER_FOCUS_CHANGED" or (event == "UNIT_AURA" and unit == "focus") then
             self:StyleFocusAuras()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_PlayerSpells" then
@@ -993,34 +992,6 @@ function Theme:StyleNameplateForUnit(unit)
     end
 
     StyleNameplate(nameplate)
-    self:StyleNameplateAlpha(nameplate)
-end
-
-function Theme:StyleNameplateAlpha(nameplate)
-    if not nameplate or not nameplate.unitToken or not nameplate.UnitFrame then
-        return
-    end
-
-    local unit = nameplate.unitToken
-    local frame = nameplate.UnitFrame
-
-    if UnitExists("target") and not UnitIsDeadOrGhost("target") then
-        if UnitIsUnit(unit, "target") then
-            frame:SetAlpha(1)
-        else
-            frame:SetAlpha(0.75)
-        end
-    else
-        frame:SetAlpha(1)
-    end
-end
-
-function Theme:StyleAllNameplateAlphas()
-    local nameplates = C_NamePlate.GetNamePlates()
-
-    for _, nameplate in ipairs(nameplates) do
-        self:StyleNameplateAlpha(nameplate)
-    end
 end
 
 function Theme:StyleItemTextFrame()
