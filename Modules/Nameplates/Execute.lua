@@ -21,7 +21,7 @@ local plateData = {}
 local function UpdateExecuteFrame(unit)
     local data = plateData[unit]
 
-    if not data then
+    if not data or not data.executeBorder then
         return
     end
 
@@ -80,7 +80,7 @@ end
 local function RemoveExecuteFrame(unit)
     local data = plateData[unit]
 
-    if not data then
+    if not data or not data.executeBorder then
         return
     end
 
