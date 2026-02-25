@@ -8,83 +8,7 @@ function Mouseover:OnInitialize()
     self.events = CreateFrame("Frame")
 end
 
-function Mouseover:OnEnable()
-    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-    self.events:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-    self.events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-
-    local lastCheckAt = 0
-    local checkIntervalSeconds = 0.05
-    local currentMouseoverUnit = nil
-
-    local function ShowMouseover(unit)
-        if mouseovers[unit] then
-            mouseovers[unit]:Show()
-        end
-    end
-
-    local function HideMouseover(unit)
-        if mouseovers[unit] then
-            mouseovers[unit]:Hide()
-        end
-    end
-
-    local function AddMouseover(unit)
-        Mouseover:AddMouseoverFor(unit)
-
-        if UnitIsUnit(unit, "mouseover") then
-            ShowMouseover(unit)
-        end
-    end
-
-    local function UpdateMouseover()
-        if currentMouseoverUnit then
-            HideMouseover(currentMouseoverUnit)
-            currentMouseoverUnit = nil
-        end
-
-        local unit = "mouseover"
-
-        if UnitExists(unit) then
-            local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
-
-            if nameplate and nameplate.unitToken then
-                ShowMouseover(nameplate.unitToken)
-                currentMouseoverUnit = nameplate.unitToken
-            end
-        end
-    end
-
-    local function UpdateNoLongerMouseover(elapsed)
-        lastCheckAt = lastCheckAt + elapsed
-
-        if lastCheckAt >= checkIntervalSeconds then
-            lastCheckAt = 0
-            UpdateMouseover()
-        end
-    end
-
-    Mouseover:SecureHookScript(Mouseover.events, "OnEvent", function(_, event, unit)
-        if event == "NAME_PLATE_UNIT_ADDED" then
-            AddMouseover(unit)
-        elseif event == "NAME_PLATE_UNIT_REMOVED" then
-            Mouseover:RemoveMouseoverFor(unit)
-        elseif event == "UPDATE_MOUSEOVER_UNIT" then
-            UpdateMouseover()
-        end
-    end)
-
-    self:SecureHookScript(self.events, "OnUpdate", function(self, elapsed)
-        UpdateNoLongerMouseover(elapsed)
-    end)
-end
-
-function Mouseover:OnDisable()
-    self.events:UnregisterAllEvents()
-    self:UnhookAll()
-end
-
-function Mouseover:AddMouseoverFor(unit)
+local function AddMouseoverFor(unit)
     local function AnchorFrameTo(frame, nameplate)
         frame:SetPoint("TOPLEFT", nameplate, "TOPLEFT", 0, 0)
         frame:SetPoint("BOTTOMRIGHT", nameplate, "BOTTOMRIGHT", 0, 0)
@@ -117,7 +41,7 @@ function Mouseover:AddMouseoverFor(unit)
     end
 end
 
-function Mouseover:RemoveMouseoverFor(unit)
+local function RemoveMouseoverFor(unit)
     local frame = mouseovers[unit]
 
     if not frame then
@@ -126,4 +50,80 @@ function Mouseover:RemoveMouseoverFor(unit)
 
     frame:Hide()
     frame:ClearAllPoints()
+end
+
+function Mouseover:OnEnable()
+    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+    self.events:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+    self.events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+
+    local lastCheckAt = 0
+    local checkIntervalSeconds = 0.05
+    local currentMouseoverUnit = nil
+
+    local function AddMouseover(unit)
+        Mouseover:AddMouseoverFor(unit)
+
+        if UnitIsUnit(unit, "mouseover") then
+            ShowMouseover(unit)
+        end
+    end
+
+    local function ShowMouseover(unit)
+        if mouseovers[unit] then
+            mouseovers[unit]:Show()
+        end
+    end
+
+    local function HideMouseover(unit)
+        if mouseovers[unit] then
+            mouseovers[unit]:Hide()
+        end
+    end
+
+    local function UpdateMouseover()
+        if currentMouseoverUnit then
+            HideMouseover(currentMouseoverUnit)
+            currentMouseoverUnit = nil
+        end
+
+        local unit = "mouseover"
+
+        if UnitExists(unit) then
+            local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
+
+            if nameplate and nameplate.unitToken then
+                ShowMouseover(nameplate.unitToken)
+                currentMouseoverUnit = nameplate.unitToken
+            end
+        end
+    end
+
+    local function UpdateNoLongerMouseover(elapsed)
+        lastCheckAt = lastCheckAt + elapsed
+
+        if lastCheckAt >= checkIntervalSeconds then
+            lastCheckAt = 0
+            UpdateMouseover()
+        end
+    end
+
+    self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
+        if event == "NAME_PLATE_UNIT_ADDED" then
+            AddMouseoverFor(unit)
+        elseif event == "NAME_PLATE_UNIT_REMOVED" then
+            RemoveMouseoverFor(unit)
+        elseif event == "UPDATE_MOUSEOVER_UNIT" then
+            UpdateMouseover()
+        end
+    end)
+
+    self:SecureHookScript(self.events, "OnUpdate", function(self, elapsed)
+        UpdateNoLongerMouseover(elapsed)
+    end)
+end
+
+function Mouseover:OnDisable()
+    self.events:UnregisterAllEvents()
+    self:UnhookAll()
 end
