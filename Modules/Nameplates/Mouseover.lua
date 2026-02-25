@@ -5,13 +5,13 @@ Mouseover:Enable()
 local mouseovers = {}
 
 function Mouseover:OnInitialize()
-    Mouseover.events = CreateFrame("Frame")
+    self.events = CreateFrame("Frame")
 end
 
 function Mouseover:OnEnable()
-    Mouseover.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-    Mouseover.events:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-    Mouseover.events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+    self.events:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+    self.events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
     local lastCheckAt = 0
     local checkIntervalSeconds = 0.05
@@ -74,14 +74,14 @@ function Mouseover:OnEnable()
         end
     end)
 
-    Mouseover:SecureHookScript(Mouseover.events, "OnUpdate", function(self, elapsed)
+    self:SecureHookScript(self.events, "OnUpdate", function(self, elapsed)
         UpdateNoLongerMouseover(elapsed)
     end)
 end
 
 function Mouseover:OnDisable()
-    Mouseover.events:UnregisterAllEvents()
-    Mouseover:UnhookAll()
+    self.events:UnregisterAllEvents()
+    self:UnhookAll()
 end
 
 function Mouseover:AddMouseoverFor(unit)
