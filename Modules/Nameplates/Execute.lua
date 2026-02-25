@@ -18,7 +18,7 @@ executeCurve:AddPoint(1.00, 0.0) -- clamp to 0 for rest of health range
 
 local plateData = {}
 
-local function UpdatePlate(unit)
+local function UpdateExecuteFrame(unit)
     local data = plateData[unit]
 
     if not data then
@@ -29,7 +29,7 @@ local function UpdatePlate(unit)
     data.executeBorder:SetAlpha(alpha)
 end
 
-local function SetupPlate(unit)
+local function AddExecuteFrame(unit)
     local function AttachToFrame(frame, anchor)
         frame:ClearAllPoints()
         frame:SetPoint("TOPLEFT", anchor, "TOPLEFT", -4, 4)
@@ -52,38 +52,32 @@ local function SetupPlate(unit)
         return
     end
 
-    if plateData[unit] then
-        local border = plateData[unit].executeBorder
-        AttachToFrame(border, frame)
-        border:Show()
-    else
-        local border = CreateFrame("Frame", nil, UIParent)
-        AttachToFrame(border, frame)
-        border:SetAlpha(0) -- hidden by default
+    local border = CreateFrame("Frame", nil, frame)
+    AttachToFrame(border, frame)
+    border:SetFrameLevel(100)
+    border:SetAlpha(0) -- start hidden, will be shown when in execute range
 
-        local executeColor = {0, 1, 1, 1} -- cyan color
+    local executeColor = {1, 0, 0, 1}
 
-        local tex = border:CreateTexture(nil, "OVERLAY", nil, 6)
-        tex:SetAllPoints(border)
-        tex:SetAtlas("UI-HUD-Nameplates-TargetedByEnemy")
-        tex:SetVertexColor(unpack(executeColor))
+    local borderTex = border:CreateTexture(nil, "OVERLAY", nil, 6)
+    borderTex:SetAllPoints(border)
+    borderTex:SetAtlas("UI-HUD-Nameplates-TargetedByEnemy")
+    borderTex:SetVertexColor(unpack(executeColor))
 
-        local tex1 = border:CreateTexture(nil, "OVERLAY", nil, 7)
-        tex1:SetPoint("TOPLEFT", border, "TOPLEFT")
-        tex1:SetAtlas("icons_16x16_disease", true)
-        tex1:SetDesaturation(1) -- remove atlas color
-        tex1:SetScale(0.5)
-        tex1:SetVertexColor(unpack(executeColor))
+    local executeTex = border:CreateTexture(nil, "OVERLAY", nil, 7)
+    executeTex:SetPoint("TOPLEFT", border, "TOPLEFT")
+    executeTex:SetAtlas("icons_16x16_disease", true)
+    executeTex:SetSize(8, 8)
+    executeTex:SetVertexColor(unpack(executeColor))
 
-        plateData[unit] = {
-            executeBorder = border
-        }
-    end
+    plateData[unit] = {
+        executeBorder = border
+    }
 
-    UpdatePlate(unit)
+    UpdateExecuteFrame(unit)
 end
 
-local function TeardownPlate(unit)
+local function RemoveExecuteFrame(unit)
     local data = plateData[unit]
 
     if not data then
@@ -91,6 +85,7 @@ local function TeardownPlate(unit)
     end
 
     data.executeBorder:Hide()
+    data.executeBorder = nil
 end
 
 function Execute:OnEnable()
@@ -103,18 +98,19 @@ function Execute:OnEnable()
         if event == "PLAYER_ENTERING_WORLD" then
             wipe(plateData)
             for _, plate in pairs(C_NamePlate.GetNamePlates()) do
-                local u = plate.namePlateUnitToken
-                if u then
-                    SetupPlate(u)
+                local unit = plate.namePlateUnitToken
+                
+                if unit then
+                    AddExecuteFrame(unit)
                 end
             end
         elseif event == "NAME_PLATE_UNIT_ADDED" then
-            SetupPlate(unit)
+            AddExecuteFrame(unit)
         elseif event == "NAME_PLATE_UNIT_REMOVED" then
-            TeardownPlate(unit)
+            RemoveExecuteFrame(unit)
         elseif event == "UNIT_HEALTH" then
             if unit and unit:find("nameplate") then
-                UpdatePlate(unit)
+                UpdateExecuteFrame(unit)
             end
         end
     end)
