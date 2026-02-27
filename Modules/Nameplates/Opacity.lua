@@ -20,7 +20,7 @@ local function AdjustTargetOpacity(unit, nameplate)
         if UnitIsUnit(unit, "target") then
             frame:SetAlpha(1)
         else
-            frame:SetAlpha(0.75)
+            frame:SetAlpha(0.85)
         end
     else
         frame:SetAlpha(1)
