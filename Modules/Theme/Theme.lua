@@ -757,7 +757,7 @@ end
 function Theme:StyleFrogskisGcdBar()
     if C_AddOns.IsAddOnLoaded("FrogskisInstantCastBar") and FrogskisInstantBarFrame then
         -- "supposedly" the border
-        local frame = select(4, FrogskisInstantBarFrame:GetChildren())
+        local frame = select(5, FrogskisInstantBarFrame:GetChildren())
 
         if frame and frame:IsObjectType("Frame") then
             self:SecureHookScript(FrogskisInstantBarFrame, "OnShow", function(_)
