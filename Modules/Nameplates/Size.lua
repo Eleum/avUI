@@ -1,19 +1,14 @@
-local Size = avUI:NewModule("avUI.Nameplates.Size", "AceHook-3.0")
-
-Size:Enable()
+local Size = avUI:NewModule("avUI.Nameplates.Size", "AceHook-3.0", "AceEvent-3.0")
 
 function Size:OnInitialize()
-    self.events = CreateFrame("Frame")
 end
 
-local function AdjustNameplateSize(unit, nameplate)
-    local plate = nameplate or C_NamePlate.GetNamePlateForUnit(unit)
-
-    if not plate then
+local function AdjustNameplateSize(nameplate)
+    if not nameplate then
         return
     end
 
-    local frame = plate.UnitFrame and plate.UnitFrame.HealthBarsContainer
+    local frame = nameplate.UnitFrame and nameplate.UnitFrame.HealthBarsContainer
 
     if not frame or frame:IsForbidden() then
         return
@@ -22,29 +17,39 @@ local function AdjustNameplateSize(unit, nameplate)
     frame:SetHeight(10)
 end
 
+local function AdjustNameplateSizeUnit(unit)
+    local nameplate = nameplate or C_NamePlate.GetNamePlateForUnit(unit)
+
+    if not nameplate then
+        return
+    end
+
+    AdjustNameplateSize(nameplate)
+end
+
 local function AdjustAllNameplateSizes()
     local nameplates = C_NamePlate.GetNamePlates()
 
     for _, nameplate in ipairs(nameplates) do
-        AdjustNameplateSize(nameplate.unitToken, nameplate)
+        AdjustNameplateSize(nameplate)
     end
 end
 
+local function OnNameplateAdded(event, unit)
+    AdjustNameplateSizeUnit(unit)
+end
+
+local function OnUpdateAnchors()
+    AdjustAllNameplateSizes()
+end
+
 function Size:OnEnable()
-    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+    self:RegisterEvent("NAME_PLATE_UNIT_ADDED", OnNameplateAdded)
 
-    self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
-        if event == "NAME_PLATE_UNIT_ADDED" then
-            AdjustNameplateSize(unit)
-        end
-    end)
-
-    self:SecureHook(NamePlateUnitFrameMixin, "UpdateAnchors", function()
-        AdjustAllNameplateSizes()
-    end)
+    self:SecureHook(NamePlateUnitFrameMixin, "UpdateAnchors", OnUpdateAnchors)
 end
 
 function Size:OnDisable()
-    self.events:UnregisterAllEvents()
+    self:UnregisterAllEvents()
     self:UnhookAll()
 end
