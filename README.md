@@ -2,8 +2,6 @@
 
 avUI is a small, modular, personal use World of Warcraft UI addon, featuring Blizzard default UI-targeted enhancements and theming.
 
----
-
 ## Architecture
 
 - Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`.
@@ -20,8 +18,6 @@ avUI is a small, modular, personal use World of Warcraft UI addon, featuring Bli
   - `Opacity.lua` &mdash; Opacity configuration for the non-focused nameplates;
   - `Execute.lua` &mdash; 20% execute range border around the nameplate healthbar;
   - `Size.lua` &mdash; Nameplate healthbar size configuration.
-
----
 
 ## Credits
 
