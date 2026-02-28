@@ -1,14 +1,11 @@
-local Mouseover = avUI:NewModule("avUI.Nameplates.Mouseover", "AceHook-3.0")
-
-Mouseover:Enable()
+local Mouseover = avUI:NewModule("avUI.Nameplates.Mouseover", "AceHook-3.0", "AceEvent-3.0")
 
 local mouseovers = {}
 
 function Mouseover:OnInitialize()
-    self.events = CreateFrame("Frame")
 end
 
-local function AddMouseoverFor(unit)
+local function AddMouseoverFor(event, unit)
     local function AnchorFrameTo(frame, nameplate)
         frame:SetPoint("TOPLEFT", nameplate, "TOPLEFT", 0, 0)
         frame:SetPoint("BOTTOMRIGHT", nameplate, "BOTTOMRIGHT", 0, 0)
@@ -41,7 +38,7 @@ local function AddMouseoverFor(unit)
     end
 end
 
-local function RemoveMouseoverFor(unit)
+local function RemoveMouseoverFor(event, unit)
     local frame = mouseovers[unit]
 
     if not frame then
@@ -53,25 +50,19 @@ local function RemoveMouseoverFor(unit)
 end
 
 function Mouseover:OnEnable()
-    self.events:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-    self.events:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-    self.events:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-
-    local lastCheckAt = 0
-    local checkIntervalSeconds = 0.05
     local currentMouseoverUnit = nil
+
+    local function ShowMouseover(unit)
+        if mouseovers[unit] then
+            mouseovers[unit]:Show()
+        end
+    end
 
     local function AddMouseover(unit)
         Mouseover:AddMouseoverFor(unit)
 
         if UnitIsUnit(unit, "mouseover") then
             ShowMouseover(unit)
-        end
-    end
-
-    local function ShowMouseover(unit)
-        if mouseovers[unit] then
-            mouseovers[unit]:Show()
         end
     end
 
@@ -99,31 +90,15 @@ function Mouseover:OnEnable()
         end
     end
 
-    local function UpdateNoLongerMouseover(elapsed)
-        lastCheckAt = lastCheckAt + elapsed
+    self:RegisterEvent("NAME_PLATE_UNIT_ADDED", AddMouseoverFor)
+    self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", RemoveMouseoverFor)
+    self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", UpdateMouseover)
 
-        if lastCheckAt >= checkIntervalSeconds then
-            lastCheckAt = 0
-            UpdateMouseover()
-        end
-    end
-
-    self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
-        if event == "NAME_PLATE_UNIT_ADDED" then
-            AddMouseoverFor(unit)
-        elseif event == "NAME_PLATE_UNIT_REMOVED" then
-            RemoveMouseoverFor(unit)
-        elseif event == "UPDATE_MOUSEOVER_UNIT" then
-            UpdateMouseover()
-        end
-    end)
-
-    self:SecureHookScript(self.events, "OnUpdate", function(self, elapsed)
-        UpdateNoLongerMouseover(elapsed)
-    end)
+    self.ticker = C_Timer.NewTicker(0.05, UpdateMouseover)
 end
 
 function Mouseover:OnDisable()
-    self.events:UnregisterAllEvents()
+    self.ticker:Cancel()
+    self:UnregisterAllEvents()
     self:UnhookAll()
 end
