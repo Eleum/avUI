@@ -7,10 +7,10 @@ avUI is a small, modular, personal use World of Warcraft UI addon, featuring Bli
 - Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`.
 - Modular structure
 
+## Modules
+
 > [!WARNING]
 > No module configuration is present at the moment, all modules are enabled by default
-
-## Modules
 
 - `Theme.lua` &mdash; darker theme for the Blizzard default UI.
 - `UnitFrames`
