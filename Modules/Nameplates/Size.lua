@@ -3,8 +3,8 @@ local Size = avUI:NewModule("avUI.Nameplates.Size", "AceHook-3.0", "AceEvent-3.0
 function Size:OnInitialize()
 end
 
-local function SetHealthBarHeight(frame)
-    if not frame or not frame.healthBar then
+local function SetHealthBarHeight(frame, a)
+    if not frame or not frame.healthBar or frame:IsForbidden() then
         return
     end
 
