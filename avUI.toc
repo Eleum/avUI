@@ -2,7 +2,7 @@
 ## Title: av|cffc08dffUI|r
 ## Author: AVikend
 ## Version: 0.5
-## Notes: Extra features for the Blizzard default UI
+## Notes: Blizzard default UI enhancements and theming
 ## IconTexture: Interface\Icons\ability_priest_spiritoftheredeemer
 
 ## Category-enUS: User Interface

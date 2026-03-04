@@ -1,10 +1,10 @@
 # avUI
 
-avUI is a small, modular, personal use World of Warcraft UI addon, featuring Blizzard default UI-targeted enhancements and theming.
+**avUI** is a small, modular, personal use World of Warcraft UI addon, featuring Blizzard default UI-targeted enhancements and theming.
 
 ## Architecture
 
-- Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`.
+- Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`
 - Modular structure
 
 ## Modules
@@ -15,6 +15,7 @@ avUI is a small, modular, personal use World of Warcraft UI addon, featuring Bli
 - `Theme.lua` &mdash; darker theme for the Blizzard default UI.
 - `UnitFrames`
   - `Absorbs.lua` &mdash; Overabsorb display on raid-style party frames;
+  - `Auras.lua` &mdash; StatusText coloring on raid-style party frames when Atonement buff is present;
   - `Defensives.lua` &mdash; Big defensive placement configuration.
 - `Nameplates`
   - `Mouseover.lua` &mdash; Border display around the mouseovered nameplate;
