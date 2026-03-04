@@ -4,8 +4,8 @@
 
 ## Architecture
 
-- Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`
-- Modular structure
+- Framework libraries: `AceAddon-3.0`, `AceEvent-3.0`, `AceHook-3.0`, `CallbackHandler-1.0`, `LibStub`.
+- Modular structure.
 
 ## Modules
 
