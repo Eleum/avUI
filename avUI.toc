@@ -1,7 +1,7 @@
 ## Interface: 120000, 120001
 ## Title: av|cffc08dffUI|r
 ## Author: AVikend
-## Version: 0.4
+## Version: 0.5
 ## Notes: Extra features for the Blizzard default UI
 ## IconTexture: Interface\Icons\ability_priest_spiritoftheredeemer
 
@@ -22,6 +22,7 @@ avUI.lua
 Modules\Theme\Theme.lua
 Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
+Modules\UnitFrames\Auras.lua
 Modules\UnitFrames\Defensives.lua
 Modules\UnitFrames\Health.lua
 Modules\Nameplates\Mouseover.lua
