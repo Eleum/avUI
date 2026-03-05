@@ -20,7 +20,35 @@ local function HexToRGB(hex)
     end
 end
 
-local function ColorFrameStatusTextOnAtonementAura(frame, auras)
+local function ResetAtonementAura(frame)
+    local name = frame:GetName()
+
+    if name then
+        local textFrame = _G[name .. "StatusText"]
+
+        if textFrame then
+            local color = frame.__avuiStatusTextColor or {0.5, 0.5, 0.5}
+            if frame.__avuiStatusTextFont then
+                textFrame:SetFont(unpack(frame.__avuiStatusTextFont))
+            else
+                textFrame:SetFontObject(GameFontDisable)
+            end
+            textFrame:SetTextColor(unpack(color))
+        end
+    end
+
+    frame.__avuiAtonementInstanceId = nil
+    frame.__avuiStatusTextFont = nil
+    frame.__avuiStatusTextColor = nil
+end
+
+local function ResetAtonementAuraChecked(frame)
+    if frame.__avuiAtonementInstanceId then
+        ResetAtonementAura(frame)
+    end
+end
+
+local function ApplyAtonementAura(frame, auras)
     local ATONEMENT_AURA_ID = 194384
 
     if auras and auras.addedAuras then
@@ -49,29 +77,7 @@ local function ColorFrameStatusTextOnAtonementAura(frame, auras)
     if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
         for _, aura in pairs(auras.removedAuraInstanceIDs) do
             if aura == frame.__avuiAtonementInstanceId then
-                frame.__avuiAtonementInstanceId = nil
-
-                local name = frame:GetName()
-
-                if name then
-                    local textFrame = _G[name .. "StatusText"]
-
-                    if textFrame then
-                        local color = frame.__avuiStatusTextColor or {0.5, 0.5, 0.5}
-
-                        if frame.__avuiStatusTextFont then
-                            textFrame:SetFont(unpack(frame.__avuiStatusTextFont))
-                        else
-                            textFrame:SetFontObject(GameFontDisable)
-                        end
-
-                        textFrame:SetTextColor(unpack(color))
-                    end
-                end
-
-                frame.__avuiStatusTextFont = nil
-                frame.__avuiStatusTextColor = nil
-
+                ResetAtonementAura(frame)
                 break
             end
         end
@@ -79,7 +85,8 @@ local function ColorFrameStatusTextOnAtonementAura(frame, auras)
 end
 
 function Auras:OnEnable()
-    self:SecureHook("CompactUnitFrame_UpdateAuras", ColorFrameStatusTextOnAtonementAura)
+    self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
+    self:SecureHook("CompactUnitFrame_UpdateAuras", ApplyAtonementAura)
 end
 
 function Auras:OnDisable()
