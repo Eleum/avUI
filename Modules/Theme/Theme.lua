@@ -96,6 +96,7 @@ function Theme:ApplyTheme()
     self:StyleItemTextFrame()
     self:StyleGossipFrame()
     self:StyleDressUpFrame()
+    self:StyleQueueStatusFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -919,6 +920,10 @@ function Theme:StyleDressUpFrame()
     self:StyleNineSlice(DressUpFrame, self.MAIN_COLOR)
     self:StyleNineSlice(DressUpFrameInset, self.SECONDARY_COLOR)
     DressUpFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleQueueStatusFrame()
+    self:StyleNineSlice(QueueStatusFrame, self.MAIN_COLOR)
 end
 
 function Theme:StyleButton(button)
