@@ -43,7 +43,7 @@ local function ResetAtonementAura(frame)
 end
 
 local function ResetAtonementAuraChecked(frame)
-    if frame.__avuiAtonementInstanceId then
+    if frame and frame.__avuiAtonementInstanceId then
         ResetAtonementAura(frame)
     end
 end
@@ -52,13 +52,14 @@ local function ApplyAtonementAura(frame, auras)
     local ATONEMENT_AURA_ID = 194384
 
     if auras and auras.addedAuras then
-        for i, aura in pairs(auras.addedAuras) do
+        for _, aura in ipairs(auras.addedAuras) do
             if not issecretvalue(aura.spellId) and aura.spellId == ATONEMENT_AURA_ID and
                 not frame.__avuiAtonementInstanceId then
                 local name = frame:GetName()
 
                 if name then
                     local textString = _G[name .. "StatusText"]
+
                     if textString and textString:IsShown() then
                         frame.__avuiAtonementInstanceId = aura.auraInstanceID
                         local font, size, flags = textString:GetFont()
@@ -75,7 +76,7 @@ local function ApplyAtonementAura(frame, auras)
     end
 
     if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
-        for _, aura in pairs(auras.removedAuraInstanceIDs) do
+        for _, aura in ipairs(auras.removedAuraInstanceIDs) do
             if aura == frame.__avuiAtonementInstanceId then
                 ResetAtonementAura(frame)
                 break
