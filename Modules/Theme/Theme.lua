@@ -848,6 +848,8 @@ function Theme:StylePlayerSpellsFrame()
             StyleFrame(frame)
         end)
     end
+
+    OverlayPlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 end
 
 function Theme:StylePaladinPowerBarFrame()
