@@ -934,10 +934,13 @@ function Theme:StyleAuctionHouseFrame()
     self:StyleNineSlice(AuctionHouseFrame, self.MAIN_COLOR)
     self:StyleNineSlice(AuctionHouseFrame.BrowseResultsFrame.ItemList, self.SECONDARY_COLOR)
     self:StyleNineSlice(AuctionHouseFrame.CategoriesList, self.SECONDARY_COLOR)
-    
+
     AuctionHouseFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
-    for _, frame in pairs(AuctionHouseFrame.Tabs) do
+    self:StyleNineSlice(AuctionHouseFrame.MoneyFrameInset, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(AuctionHouseFrame.MoneyFrameBorder, self.SECONDARY_COLOR)
+
+    for _, frame in ipairs(AuctionHouseFrame.Tabs) do
         self:StyleTabButton(frame)
     end
 end
