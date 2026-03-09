@@ -49,6 +49,8 @@ function Theme:OnEnable()
             self:StyleFocusAuras()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_PlayerSpells" then
             self:StylePlayerSpellsFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_AuctionHouseUI" then
+            self:StyleAuctionHouseFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
@@ -926,6 +928,18 @@ end
 
 function Theme:StyleQueueStatusFrame()
     self:StyleNineSlice(QueueStatusFrame, self.MAIN_COLOR)
+end
+
+function Theme:StyleAuctionHouseFrame()
+    self:StyleNineSlice(AuctionHouseFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(AuctionHouseFrame.BrowseResultsFrame.ItemList, self.SECONDARY_COLOR)
+    self:StyleNineSlice(AuctionHouseFrame.CategoriesList, self.SECONDARY_COLOR)
+    
+    AuctionHouseFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    for _, frame in pairs(AuctionHouseFrame.Tabs) do
+        self:StyleTabButton(frame)
+    end
 end
 
 function Theme:StyleButton(button)
