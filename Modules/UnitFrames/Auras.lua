@@ -53,7 +53,7 @@ local function ApplyAtonementAura(frame, auras)
 
     if auras and auras.addedAuras then
         for _, aura in ipairs(auras.addedAuras) do
-            if not issecretvalue(aura.spellId) and aura.spellId == ATONEMENT_AURA_ID and
+            if not frame:IsForbidden() and not issecretvalue(aura.spellId) and aura.spellId == ATONEMENT_AURA_ID and
                 not frame.__avuiAtonementInstanceId then
                 local name = frame:GetName()
 
