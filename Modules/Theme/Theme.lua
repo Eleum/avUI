@@ -1031,7 +1031,7 @@ function Theme:StyleTextureRegions(frame, color)
 end
 
 function Theme:StyleNineSlice(frame, color)
-    if not frame then
+    if not frame or frame:IsForbidden() then
         return
     end
 
