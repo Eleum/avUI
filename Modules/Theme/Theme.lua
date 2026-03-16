@@ -1031,7 +1031,7 @@ function Theme:StyleTextureRegions(frame, color)
 end
 
 function Theme:StyleNineSlice(frame, color)
-    if not frame or frame:IsForbidden() then
+    if not frame then
         return
     end
 
@@ -1040,10 +1040,10 @@ function Theme:StyleNineSlice(frame, color)
     local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
                   "BottomLeftCorner", "BottomRightCorner"}
 
-    for _, part in pairs(texs) do
+    for _, part in ipairs(texs) do
         local tex = frame[part]
 
-        if tex then
+        if tex and not tex:IsForbidden() then
             tex:SetVertexColor(unpack(color));
         end
     end
