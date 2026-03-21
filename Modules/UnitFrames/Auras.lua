@@ -86,6 +86,8 @@ local function ApplyAtonementAura(frame, auras)
 end
 
 function Auras:OnEnable()
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", ResetAtonementAuraChecked)
+    self:RegisterEvent("RAID_ROSTER_UPDATE", ResetAtonementAuraChecked)
     self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
     self:SecureHook("CompactUnitFrame_UpdateAuras", ApplyAtonementAura)
 end
