@@ -99,6 +99,7 @@ function Theme:ApplyTheme()
     self:StyleGossipFrame()
     self:StyleDressUpFrame()
     self:StyleQueueStatusFrame()
+    self:StyleGroupLootFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -943,6 +944,10 @@ function Theme:StyleAuctionHouseFrame()
     for _, frame in ipairs(AuctionHouseFrame.Tabs) do
         self:StyleTabButton(frame)
     end
+end
+
+function Theme:StyleGroupLootFrame()
+    self:StyleNineSlice(GroupLootHistoryFrame, self.MAIN_COLOR)
 end
 
 function Theme:StyleButton(button)
