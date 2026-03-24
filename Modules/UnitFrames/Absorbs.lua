@@ -20,8 +20,7 @@ function Absorbs:OnDisable()
 end
 
 function Absorbs:SetAbsorbs(frame)
-    if not frame or frame:IsForbidden() or not frame.unit or not UnitIsConnected(frame.unit) or not frame.displayedUnit or
-        UnitIsDeadOrGhost(frame.displayedUnit) then
+    if not frame or frame:IsForbidden() or not frame.unit then
         return
     end
 
