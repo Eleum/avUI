@@ -77,7 +77,8 @@ local function ApplyAtonementAura(frame, auras)
 
     if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
         for _, aura in ipairs(auras.removedAuraInstanceIDs) do
-            if aura == frame.__avuiAtonementInstanceId then
+            if aura == frame.__avuiAtonementInstanceId or
+                (frame.displayedUnit and UnitIsDeadOrGhost(frame.displayedUnit)) then
                 ResetAtonementAura(frame)
                 break
             end
