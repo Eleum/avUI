@@ -100,6 +100,7 @@ function Theme:ApplyTheme()
     self:StyleDressUpFrame()
     self:StyleQueueStatusFrame()
     self:StyleGroupLootFrame()
+    self:StyleFriendsFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -578,7 +579,7 @@ function Theme:StyleTooltips()
 
     local tooltips = {GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
                       GameSmallHeaderTooltip, LibDBIconTooltip, QuestScrollFrame.CampaignTooltip,
-                      QuestScrollFrame.StoryTooltip}
+                      QuestScrollFrame.StoryTooltip, FriendsTooltip}
 
     for _, tt in ipairs(tooltips) do
         StyleTooltip(tt)
@@ -948,6 +949,16 @@ end
 
 function Theme:StyleGroupLootFrame()
     self:StyleNineSlice(GroupLootHistoryFrame, self.MAIN_COLOR)
+end
+
+function Theme:StyleFriendsFrame()
+    self:StyleNineSlice(FriendsFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(FriendsFrameInset, self.SECONDARY_COLOR)
+    FriendsFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    for _, frame in ipairs(FriendsFrame.Tabs) do
+        self:StyleTabButton(frame)
+    end
 end
 
 function Theme:StyleButton(button)
