@@ -34,8 +34,9 @@ function Defensives:ConfigureDefensives(frame)
 
         local border = buff.__avuiBorder
 
-        border:SetAtlas("UI-HUD-CoolDownManager-Debuff-Default")
-        border:SetAllPoints(buff)
+        border:SetAtlas("combattimeline-fx-pause")
+        border:SetPoint("TOPLEFT", buff, "TOPLEFT", -6, 6)
+        border:SetPoint("BOTTOMRIGHT", buff, "BOTTOMRIGHT", 6, -6)
     end
 
     frame.__avuiDefensiveBuff = true
