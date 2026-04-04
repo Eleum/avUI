@@ -324,22 +324,15 @@ function Theme:StylePetFrame()
 end
 
 function Theme:StylePlayerAuras()
-    for index, _ in pairs(BuffFrame.auraFrames) do
-        local aura = select(index, BuffFrame.AuraContainer:GetChildren())
-        self:StyleIconFrame(aura)
-    end
+    -- Removed in favor of Masque
 end
 
 function Theme:StyleTargetAuras()
-    for aura, _ in TargetFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleIconFrame(aura)
-    end
+    -- Removed in favor of Masque
 end
 
 function Theme:StyleFocusAuras()
-    for aura, _ in FocusFrame.auraPools:GetPool("TargetBuffFrameTemplate"):EnumerateActive() do
-        self:StyleIconFrame(aura)
-    end
+    -- Removed in favor of Masque
 end
 
 function Theme:StyleMinimap()
