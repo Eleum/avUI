@@ -58,6 +58,10 @@ local function ResetAuraChecked(frame, appliedAura)
     end
 end
 
+local function ResetAtonementAuraChecked(frame)
+    ResetAuraChecked(frame, auras.Atonement)
+end
+
 local function ApplyAura(frame, blizzAuras, appliedAura)
     if not frame or not blizzAuras or not appliedAura then
         return
@@ -116,10 +120,10 @@ local function ApplyAtonementAura(frame, blizzAuras)
 end
 
 function Auras:OnEnable()
-    self:RegisterEvent("READY_CHECK", ResetAuraChecked)
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", ResetAuraChecked)
-    self:RegisterEvent("RAID_ROSTER_UPDATE", ResetAuraChecked)
-    self:SecureHook("CompactUnitFrame_SetUnit", ResetAuraChecked)
+    self:RegisterEvent("READY_CHECK", ResetAtonementAuraChecked)
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", ResetAtonementAuraChecked)
+    self:RegisterEvent("RAID_ROSTER_UPDATE", ResetAtonementAuraChecked)
+    self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
     self:SecureHook("CompactUnitFrame_UpdateAuras", ApplyAtonementAura)
 end
 
