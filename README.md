@@ -1,6 +1,6 @@
 # avUI
 
-**avUI** is a small, modular, personal use World of Warcraft UI addon, featuring Blizzard default UI-targeted enhancements and theming.
+**avUI** is a small, modular, personal use World of Warcraft UI addon, featuring default Blizzard UI-targeted enhancements and theming.
 
 ## Architecture
 
@@ -12,7 +12,7 @@
 > [!WARNING]
 > No module configuration is present at the moment, all modules are enabled by default
 
-- `Theme.lua` &mdash; darker theme for the Blizzard default UI.
+- `Theme.lua` &mdash; darker theme for the default Blizzard UI.
 - `UnitFrames`
   - `Absorbs.lua` &mdash; Overabsorb display on raid-style party frames;
   - `Auras.lua` &mdash; StatusText coloring on raid-style party frames when Atonement buff is present;
