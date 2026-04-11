@@ -4,8 +4,8 @@ function Defensives:OnInitialize()
 end
 
 local function ConfigureDefensives(frame)
-    if not frame or not frame.unit or UnitInRaid(frame.unit) or not frame.CenterDefensiveBuff or
-        frame.CenterDefensiveBuff:IsForbidden() or frame.__avuiDefensiveBuff then
+    if not frame or not frame.unit or not frame.CenterDefensiveBuff or frame.CenterDefensiveBuff:IsForbidden() or
+        frame.__avuiDefensiveBuff then
         return
     end
 
@@ -35,4 +35,5 @@ end
 
 function Defensives:OnDisable()
     self:UnhookAll()
+    self:UnregisterAllEvents()
 end
