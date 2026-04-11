@@ -1,5 +1,7 @@
 local Auras = avUI:NewModule("avUI.Nameplates.Auras", "AceHook-3.0", "AceEvent-3.0")
 
+Auras:Disable()
+
 function Auras:OnInitialize()
 end
 
