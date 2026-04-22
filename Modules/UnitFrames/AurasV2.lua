@@ -63,9 +63,8 @@ local function ResetAuraChecked(frame, appliedAura)
     if not unit or not UnitFrames:IsPartyOrRaidUnit(unit) then
         return
     end
-    
+
     if appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
-        print("resetting for unit", unit, "frame", frame:GetName())
         ResetAura(frame, appliedAura.frameInstanceMarker)
     end
 end
