@@ -1,6 +1,5 @@
-local Auras = avUI:NewModule("avUI.Nameplates.Auras", "AceHook-3.0", "AceEvent-3.0")
-
-Auras:Disable()
+local Auras = avUI:NewModule("avUI.Nameplates.Auras.V2", "AceHook-3.0", "AceEvent-3.0")
+local UnitFrames = avUI:GetModule("avUI.UnitFrames")
 
 function Auras:OnInitialize()
 end
@@ -22,7 +21,21 @@ local function HexToRGB(hex)
     end
 end
 
-local function ResetAtonementAura(frame)
+local auras = {
+    Atonement = {
+        spellId = 194384,
+        sourceUnit = "player",
+        color = HexToRGB("#ffd447"),
+        frameInstanceMarker = "__avuiAtonementInstanceId",
+        cleanBeforeApply = true
+    }
+}
+
+local function ResetAura(frame, frameAuraInstanceMarker)
+    if not frame or not frame.GetName then
+        return
+    end
+
     local name = frame:GetName()
 
     if name then
@@ -39,36 +52,57 @@ local function ResetAtonementAura(frame)
         end
     end
 
-    frame.__avuiAtonementInstanceId = nil
+    frame[frameAuraInstanceMarker] = nil
     frame.__avuiStatusTextFont = nil
     frame.__avuiStatusTextColor = nil
 end
 
-local function ResetAtonementAuraChecked(frame)
-    if frame and frame.__avuiAtonementInstanceId then
-        ResetAtonementAura(frame)
+local function ResetAuraChecked(frame, appliedAura)
+    local unit = UnitFrames:GetFrameUnit(frame)
+
+    if not unit or not UnitFrames:IsPartyOrRaidUnit(unit) then
+        return
+    end
+
+    if appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
+        ResetAura(frame, appliedAura.frameInstanceMarker)
     end
 end
 
-local function ApplyAtonementAura(frame, auras)
-    local ATONEMENT_AURA_ID = 194384
+local function ResetAtonementAuraChecked(frame)
+    ResetAuraChecked(frame, auras.Atonement)
+end
 
-    if auras and auras.addedAuras then
-        for _, aura in ipairs(auras.addedAuras) do
-            if not frame:IsForbidden() and not issecretvalue(aura.spellId) and aura.spellId == ATONEMENT_AURA_ID and
-                aura.sourceUnit == "player" and not frame.__avuiAtonementInstanceId then
+local function ApplyAura(frame, blizzAuras, appliedAura)
+    if not frame or not blizzAuras or not appliedAura then
+        return
+    end
+
+    if blizzAuras.addedAuras then
+        for _, aura in ipairs(blizzAuras.addedAuras) do
+            if not frame:IsForbidden() and not issecretvalue(aura.spellId) and aura.spellId == appliedAura.spellId and
+                (not appliedAura.sourceUnit or aura.sourceUnit == appliedAura.sourceUnit) then
+                if appliedAura.cleanBeforeApply then
+                    ResetAuraChecked(frame, appliedAura)
+                end
+
                 local name = frame:GetName()
 
                 if name then
                     local textString = _G[name .. "StatusText"]
 
                     if textString and textString:IsShown() then
-                        frame.__avuiAtonementInstanceId = aura.auraInstanceID
+                        if appliedAura.frameInstanceMarker then
+                            frame[appliedAura.frameInstanceMarker] = aura.auraInstanceID
+                        end
+
                         local font, size, flags = textString:GetFont()
+
                         frame.__avuiStatusTextFont = {font, size, flags}
                         frame.__avuiStatusTextColor = {textString:GetTextColor()}
+
                         textString:SetFont(font, size, "OUTLINE")
-                        textString:SetTextColor(unpack(HexToRGB("#ffd447")))
+                        textString:SetTextColor(unpack(appliedAura.color))
                     end
                 end
 
@@ -77,23 +111,56 @@ local function ApplyAtonementAura(frame, auras)
         end
     end
 
-    if auras and auras.removedAuraInstanceIDs and frame.__avuiAtonementInstanceId then
-        for _, aura in ipairs(auras.removedAuraInstanceIDs) do
-            if aura == frame.__avuiAtonementInstanceId or
-                (frame.displayedUnit and UnitIsDeadOrGhost(frame.displayedUnit)) then
-                ResetAtonementAura(frame)
-                break
+    if appliedAura.frameInstanceMarker then
+        local marker = appliedAura.frameInstanceMarker
+        local auraInstance = frame[marker]
+
+        if blizzAuras.removedAuraInstanceIDs and auraInstance then
+            for _, aura in ipairs(blizzAuras.removedAuraInstanceIDs) do
+                if aura == auraInstance or (frame.displayedUnit and UnitIsDeadOrGhost(frame.displayedUnit)) then
+                    ResetAura(frame, marker)
+                    break
+                end
             end
         end
     end
 end
 
+local function ApplyUnitAura(unit, blizzAuras, appliedAura)
+    if not UnitFrames:IsPartyOrRaidUnit(unit) then
+        return
+    end
+
+    if UnitInRaid(unit) then
+        for i = 1, MAX_RAID_MEMBERS do
+            local frame = _G["CompactRaidFrame" .. i]
+            local frameUnit = UnitFrames:GetFrameUnit(frame)
+
+            if frameUnit and frameUnit == unit then
+                ApplyAura(frame, blizzAuras, appliedAura)
+                return
+            end
+        end
+    else
+        for i = 1, 5 do
+            local frame = _G["CompactPartyFrameMember" .. i]
+            local frameUnit = UnitFrames:GetFrameUnit(frame)
+
+            if frameUnit and frameUnit == unit then
+                ApplyAura(frame, blizzAuras, appliedAura)
+                return
+            end
+        end
+    end
+end
+
+local function ApplyAtonementAura(event, unit, blizzAuras)
+    ApplyUnitAura(unit, blizzAuras, auras.Atonement)
+end
+
 function Auras:OnEnable()
-    self:RegisterEvent("READY_CHECK", ResetAtonementAuraChecked)
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", ResetAtonementAuraChecked)
-    self:RegisterEvent("RAID_ROSTER_UPDATE", ResetAtonementAuraChecked)
+    self:RegisterEvent("UNIT_AURA", ApplyAtonementAura)
     self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
-    self:SecureHook("CompactUnitFrame_UpdateAuras", ApplyAtonementAura)
 end
 
 function Auras:OnDisable()
