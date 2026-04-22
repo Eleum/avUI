@@ -23,3 +23,16 @@ function UnitFrames:OnInitialize()
                    "RaidGroup7Member5", "RaidGroup8Member1", "RaidGroup8Member2", "RaidGroup8Member3",
                    "RaidGroup8Member4", "RaidGroup8Member5"}
 end
+
+function UnitFrames:IsPartyOrRaidUnit(unit)
+    return type(unit) == "string" and
+               (unit == "player" or unit:match("^party%d$") or unit:match("^raid%d%d?$"))
+end
+
+function UnitFrames:GetFrameUnit(frame)
+    if not frame or not frame.displayedUnit then
+        return nil
+    end
+
+    return frame.displayedUnit
+end

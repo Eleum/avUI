@@ -1,17 +1,8 @@
 local Auras = avUI:NewModule("avUI.Nameplates.Auras.V2", "AceHook-3.0", "AceEvent-3.0")
+local UnitFrames = avUI:GetModule("avUI.UnitFrames")
 
 function Auras:OnInitialize()
 end
-
-local auras = {
-    Atonement = {
-        spellId = 194384,
-        sourceUnit = "player",
-        colorHex = "#ffd447",
-        frameInstanceMarker = "__avuiAtonementInstanceId",
-        cleanBeforeApply = true
-    }
-}
 
 local function HexToRGB(hex)
     hex = hex:gsub("#", "")
@@ -30,7 +21,21 @@ local function HexToRGB(hex)
     end
 end
 
+local auras = {
+    Atonement = {
+        spellId = 194384,
+        sourceUnit = "player",
+        color = HexToRGB("#ffd447"),
+        frameInstanceMarker = "__avuiAtonementInstanceId",
+        cleanBeforeApply = true
+    }
+}
+
 local function ResetAura(frame, frameAuraInstanceMarker)
+    if not frame or not frame.GetName then
+        return
+    end
+
     local name = frame:GetName()
 
     if name then
@@ -53,7 +58,14 @@ local function ResetAura(frame, frameAuraInstanceMarker)
 end
 
 local function ResetAuraChecked(frame, appliedAura)
-    if frame and appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
+    local unit = UnitFrames:GetFrameUnit(frame)
+
+    if not unit or not UnitFrames:IsPartyOrRaidUnit(unit) then
+        return
+    end
+    
+    if appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
+        print("resetting for unit", unit, "frame", frame:GetName())
         ResetAura(frame, appliedAura.frameInstanceMarker)
     end
 end
@@ -91,7 +103,7 @@ local function ApplyAura(frame, blizzAuras, appliedAura)
                         frame.__avuiStatusTextColor = {textString:GetTextColor()}
 
                         textString:SetFont(font, size, "OUTLINE")
-                        textString:SetTextColor(unpack(HexToRGB(appliedAura.colorHex)))
+                        textString:SetTextColor(unpack(appliedAura.color))
                     end
                 end
 
@@ -115,16 +127,41 @@ local function ApplyAura(frame, blizzAuras, appliedAura)
     end
 end
 
-local function ApplyAtonementAura(frame, blizzAuras)
-    ApplyAura(frame, blizzAuras, auras.Atonement)
+local function ApplyUnitAura(unit, blizzAuras, appliedAura)
+    if not UnitFrames:IsPartyOrRaidUnit(unit) then
+        return
+    end
+
+    if UnitInRaid(unit) then
+        for i = 1, MAX_RAID_MEMBERS do
+            local frame = _G["CompactRaidFrame" .. i]
+            local frameUnit = UnitFrames:GetFrameUnit(frame)
+
+            if frameUnit and frameUnit == unit then
+                ApplyAura(frame, blizzAuras, appliedAura)
+                return
+            end
+        end
+    else
+        for i = 1, 5 do
+            local frame = _G["CompactPartyFrameMember" .. i]
+            local frameUnit = UnitFrames:GetFrameUnit(frame)
+
+            if frameUnit and frameUnit == unit then
+                ApplyAura(frame, blizzAuras, appliedAura)
+                return
+            end
+        end
+    end
+end
+
+local function ApplyAtonementAura(event, unit, blizzAuras)
+    ApplyUnitAura(unit, blizzAuras, auras.Atonement)
 end
 
 function Auras:OnEnable()
-    self:RegisterEvent("READY_CHECK", ResetAtonementAuraChecked)
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", ResetAtonementAuraChecked)
-    self:RegisterEvent("RAID_ROSTER_UPDATE", ResetAtonementAuraChecked)
+    self:RegisterEvent("UNIT_AURA", ApplyAtonementAura)
     self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
-    self:SecureHook("CompactUnitFrame_UpdateAuras", ApplyAtonementAura)
 end
 
 function Auras:OnDisable()
