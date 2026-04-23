@@ -1,5 +1,7 @@
 local Defensives = avUI:NewModule("avUI.UnitFrames.Defensives", "AceHook-3.0")
 
+Defensives:Disable()
+
 function Defensives:OnInitialize()
 end
 

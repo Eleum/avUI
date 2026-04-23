@@ -58,19 +58,19 @@ local function ResetAura(frame, frameAuraInstanceMarker)
 end
 
 local function ResetAuraChecked(frame, appliedAura)
+    if frame and appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
+        ResetAura(frame, appliedAura.frameInstanceMarker)
+    end
+end
+
+local function ResetValidUnitAuraChecked(frame, appliedAura)
     local unit = UnitFrames:GetFrameUnit(frame)
 
     if not unit or not UnitFrames:IsPartyOrRaidUnit(unit) then
         return
     end
 
-    if appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
-        ResetAura(frame, appliedAura.frameInstanceMarker)
-    end
-end
-
-local function ResetAtonementAuraChecked(frame)
-    ResetAuraChecked(frame, auras.Atonement)
+    ResetAuraChecked(frame, appliedAura)
 end
 
 local function ApplyAura(frame, blizzAuras, appliedAura)
@@ -82,6 +82,7 @@ local function ApplyAura(frame, blizzAuras, appliedAura)
         for _, aura in ipairs(blizzAuras.addedAuras) do
             if not frame:IsForbidden() and not issecretvalue(aura.spellId) and aura.spellId == appliedAura.spellId and
                 (not appliedAura.sourceUnit or aura.sourceUnit == appliedAura.sourceUnit) then
+
                 if appliedAura.cleanBeforeApply then
                     ResetAuraChecked(frame, appliedAura)
                 end
@@ -127,6 +128,14 @@ local function ApplyAura(frame, blizzAuras, appliedAura)
 end
 
 local function ApplyUnitAura(unit, blizzAuras, appliedAura)
+    local function ApplyUnitFrameAura(frame, unit)
+        local frameUnit = UnitFrames:GetFrameUnit(frame)
+
+        if frameUnit and frameUnit == unit then
+            ApplyAura(frame, blizzAuras, appliedAura)
+        end
+    end
+
     if not UnitFrames:IsPartyOrRaidUnit(unit) then
         return
     end
@@ -134,22 +143,14 @@ local function ApplyUnitAura(unit, blizzAuras, appliedAura)
     if UnitInRaid(unit) then
         for i = 1, MAX_RAID_MEMBERS do
             local frame = _G["CompactRaidFrame" .. i]
-            local frameUnit = UnitFrames:GetFrameUnit(frame)
 
-            if frameUnit and frameUnit == unit then
-                ApplyAura(frame, blizzAuras, appliedAura)
-                return
-            end
+            ApplyUnitFrameAura(frame, unit)
         end
     else
         for i = 1, 5 do
             local frame = _G["CompactPartyFrameMember" .. i]
-            local frameUnit = UnitFrames:GetFrameUnit(frame)
 
-            if frameUnit and frameUnit == unit then
-                ApplyAura(frame, blizzAuras, appliedAura)
-                return
-            end
+            ApplyUnitFrameAura(frame, unit)
         end
     end
 end
@@ -158,9 +159,13 @@ local function ApplyAtonementAura(event, unit, blizzAuras)
     ApplyUnitAura(unit, blizzAuras, auras.Atonement)
 end
 
+local function ResetAtonementAura(frame)
+    ResetValidUnitAuraChecked(frame, auras.Atonement)
+end
+
 function Auras:OnEnable()
     self:RegisterEvent("UNIT_AURA", ApplyAtonementAura)
-    self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAuraChecked)
+    self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAura)
 end
 
 function Auras:OnDisable()
