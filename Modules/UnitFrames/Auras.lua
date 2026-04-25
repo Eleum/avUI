@@ -141,16 +141,13 @@ local function ApplyUnitAura(unit, blizzAuras, appliedAura)
     end
 
     if UnitInRaid(unit) then
-        for i = 1, MAX_RAID_MEMBERS do
-            local frame = _G["CompactRaidFrame" .. i]
-
-            ApplyUnitFrameAura(frame, unit)
+        -- TODO: check cvar for raid grouping
+        for _, frame in ipairs(UnitFrames.framesRaidSplit) do
+            ApplyUnitFrameAura(_G[frame], unit)
         end
     else
-        for i = 1, 5 do
-            local frame = _G["CompactPartyFrameMember" .. i]
-
-            ApplyUnitFrameAura(frame, unit)
+        for _, frame in ipairs(UnitFrames.framesParty) do
+            ApplyUnitFrameAura(_G[frame], unit)
         end
     end
 end
