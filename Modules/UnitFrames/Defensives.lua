@@ -6,17 +6,12 @@ function Defensives:OnInitialize()
 end
 
 local function ConfigureDefensives(frame)
-    if not frame or not frame.unit or not frame.CenterDefensiveBuff or frame.CenterDefensiveBuff:IsForbidden() or
+    if not frame or not frame.CenterDefensiveBuff or frame.CenterDefensiveBuff:IsForbidden() or
         frame.__avuiDefensiveBuff then
         return
     end
 
     local buff = frame.CenterDefensiveBuff;
-    local point, _, relativePoint = buff:GetPoint(1);
-
-    buff:ClearPoint("LEFT")
-    buff:SetPoint("LEFT", frame, "LEFT", 0, 0)
-    buff:SetScale(0.75)
 
     if not buff.__avuiBorder then
         buff.__avuiBorder = buff:CreateTexture(nil, "OVERLAY")
@@ -32,7 +27,7 @@ local function ConfigureDefensives(frame)
 end
 
 function Defensives:OnEnable()
-    self:SecureHook("CompactUnitFrame_UpdateAuras", ConfigureDefensives)
+    self:SecureHook("CompactUnitFrame_SetUnit", ConfigureDefensives)
 end
 
 function Defensives:OnDisable()

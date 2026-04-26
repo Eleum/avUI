@@ -9,19 +9,19 @@
 
 ## Modules
 
-> [!WARNING]
-> No module configuration is present at the moment, all modules are enabled by default
+> [!INFO]
+> No manual module configuration is present at the moment, all modules are **enabled** by default, unless stated otherwise.
 
 - `Theme.lua` &mdash; darker theme for the default Blizzard UI.
 - `UnitFrames`
-  - `Absorbs.lua` &mdash; Overabsorb display on raid-style party frames;
-  - `Auras.lua` &mdash; StatusText coloring on raid-style party frames when Atonement buff is present;
-  - `Defensives.lua` &mdash; Big defensive placement configuration.
+  - `Absorbs.lua` &mdash; _Overabsorb_ display on raid-style party frames;
+  - `Auras.lua` &mdash; Coloring of StatusText part on raid-style party frames when _Atonement_ buff is present;
+  - ~~`Defensives.lua`~~ <sup>(disabled)</sup> &mdash; _Big defensive_ placement and visuals configuration.
 - `Nameplates`
   - `Mouseover.lua` &mdash; Border display around the mouseovered nameplate;
   - `Opacity.lua` &mdash; Opacity configuration for the non-focused nameplates;
-  - `Execute.lua` &mdash; 20% execute range border around the nameplate healthbar;
-  - `Size.lua` &mdash; Nameplate healthbar size configuration.
+  - `Size.lua` &mdash; Nameplate healthbar size configuration;
+  - `Execute.lua` &mdash; _20% execute_ range border around the nameplate healthbar.
 
 ## Credits
 
