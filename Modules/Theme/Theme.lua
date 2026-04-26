@@ -105,6 +105,7 @@ function Theme:ApplyTheme()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
+    self:StylePGF()
 end
 
 function Theme:StyleBarButtons()
@@ -767,6 +768,13 @@ function Theme:StyleFrogskisGcdBar()
                 end
             end)
         end
+    end
+end
+
+function Theme:StylePGF()
+    if C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
+        self:StyleNineSlice(PremadeGroupsFilterDialog, self.MAIN_COLOR)
+        PremadeGroupsFilterDialogBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
     end
 end
 
