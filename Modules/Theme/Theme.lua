@@ -101,6 +101,7 @@ function Theme:ApplyTheme()
     self:StyleQueueStatusFrame()
     self:StyleGroupLootFrame()
     self:StyleFriendsFrame()
+    self:StyleMailFrame()
     self:StyleGameMenu()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
@@ -952,6 +953,20 @@ function Theme:StyleFriendsFrame()
     for _, frame in ipairs(FriendsFrame.Tabs) do
         self:StyleTabButton(frame)
     end
+end
+
+function Theme:StyleMailFrame()
+    self:StyleNineSlice(MailFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(MailFrameInset, self.SECONDARY_COLOR)
+    MailFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    for _, frame in ipairs(MailFrame.Tabs) do
+        self:StyleTabButton(frame)
+    end
+
+    self:StyleTextureRegions(SendMailFrame, self.SECONDARY_COLOR)
+
+    self:StyleNineSlice(SendMailMoneyInset, self.SECONDARY_COLOR)
 end
 
 function Theme:StyleButton(button)
