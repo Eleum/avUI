@@ -94,6 +94,7 @@ function Theme:ApplyTheme()
     self:StyleMirrorTimers()
     self:StyleBankFrame()
     self:StylePaladinPowerBarFrame()
+    self:StyleMonkHarmonyBarFrame()
     self:StylePVEFrame()
     self:StyleItemTextFrame()
     self:StyleGossipFrame()
@@ -867,6 +868,17 @@ function Theme:StylePaladinPowerBarFrame()
         end
         if frame and frame.ActiveTexture then
             frame.ActiveTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
+        end
+    end
+end
+
+function Theme:StyleMonkHarmonyBarFrame()
+    for _, frame in ipairs(MonkHarmonyBarFrame.classResourceButtonTable) do
+        if frame and frame.Chi_BG then
+            frame.Chi_BG:SetVertexColor(unpack(self.MAIN_COLOR))
+        end
+        if frame and frame.Chi_BG_Active then
+            frame.Chi_BG_Active:SetVertexColor(unpack(self.MAIN_COLOR))
         end
     end
 end
