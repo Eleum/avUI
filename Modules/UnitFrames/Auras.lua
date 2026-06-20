@@ -25,8 +25,15 @@ local auras = {
     Atonement = {
         spellId = 194384,
         sourceUnit = "player",
-        color = HexToRGB("#ffd447"),
+        color = HexToRGB("#ffd444"),
         frameInstanceMarker = "__avuiAtonementInstanceId",
+        cleanBeforeApply = true
+    },
+    RenewingMist = {
+        spellId = 119611,
+        sourceUnit = "player",
+        color = HexToRGB("#ffd444"),
+        frameInstanceMarker = "__avuiRenewingMistInstanceId",
         cleanBeforeApply = true
     }
 }
@@ -160,9 +167,23 @@ local function ResetAtonementAura(frame)
     ResetValidUnitAuraChecked(frame, auras.Atonement)
 end
 
+local function ApplyRenewingMistAura(event, unit, blizzAuras)
+    ApplyUnitAura(unit, blizzAuras, auras.RenewingMist)
+end
+
+local function ResetRenewingMistAura(frame)
+    ResetValidUnitAuraChecked(frame, auras.RenewingMist)
+end
+
 function Auras:OnEnable()
-    self:RegisterEvent("UNIT_AURA", ApplyAtonementAura)
-    self:SecureHook("CompactUnitFrame_SetUnit", ResetAtonementAura)
+    self:RegisterEvent("UNIT_AURA", function(event, unit, auras)
+        ApplyAtonementAura(event, unit, auras)
+        ApplyRenewingMistAura(event, unit, auras)
+    end)
+    self:SecureHook("CompactUnitFrame_SetUnit", function(frame)
+        ResetAtonementAura(frame)
+        ResetRenewingMistAura(frame)
+    end)
 end
 
 function Auras:OnDisable()
