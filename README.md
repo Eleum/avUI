@@ -15,7 +15,7 @@
 - `Theme.lua` &mdash; darker theme for the default Blizzard UI.
 - `UnitFrames`
   - `Absorbs.lua` &mdash; _Overabsorb_ display on raid-style party frames;
-  - `Auras.lua` &mdash; Coloring of StatusText part on raid-style party frames when _Atonement_ buff is present;
+  - `Auras.lua` &mdash; Coloring of StatusText part on raid-style party frames when any of these buffs are present:  _Atonement_, _Renewing Mist_;
   - ~~`Defensives.lua`~~ <sup>(disabled)</sup> &mdash; _Big defensive_ placement and visuals configuration.
 - `Nameplates`
   - `Mouseover.lua` &mdash; Border display around the mouseovered nameplate;
