@@ -1119,15 +1119,15 @@ end
 function Theme:StyleMailFrame()
     self:StyleNineSlice(MailFrame, self.MAIN_COLOR)
     self:StyleNineSlice(MailFrameInset, self.SECONDARY_COLOR)
-    MailFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    MailFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
     for _, frame in ipairs(MailFrame.Tabs) do
         self:StyleTabButton(frame)
     end
 
     self:StyleTextureRegions(SendMailFrame, self.SECONDARY_COLOR)
-
     self:StyleNineSlice(SendMailMoneyInset, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(SendMailMoneyBg, self.SECONDARY_COLOR)
 end
 
 function Theme:StyleCooldownManagerBuffFrame()
@@ -1146,4 +1146,8 @@ end
 
 function Theme:StyleClassTrainerFrame()
     self:StyleNineSlice(ClassTrainerFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(ClassTrainerFrame.Inset, self.SECONDARY_COLOR)
+    self:StyleNineSlice(ClassTrainerFrameBottomInset, self.SECONDARY_COLOR)
+    ClassTrainerFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ClassTrainerFrameMoneyBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
