@@ -1,7 +1,5 @@
 local Theme = avUI:NewModule("avUI.Theme", "AceHook-3.0")
 
--- credits to SUI and mUI for auras styling
-
 Theme:Enable()
 
 Theme.COLORS = {
@@ -41,7 +39,6 @@ function Theme:OnEnable()
     self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
         if event == "PLAYER_ENTERING_WORLD" then
             self:StylePlayerAuras()
-            self:StyleCooldownManagerBuffFrame()
         elseif event == "UNIT_AURA" and unit == "player" then
             self:StylePlayerAuras()
         elseif event == "PLAYER_TARGET_CHANGED" or (event == "UNIT_AURA" and unit == "target") then
@@ -52,11 +49,13 @@ function Theme:OnEnable()
             self:StylePlayerSpellsFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_AuctionHouseUI" then
             self:StyleAuctionHouseFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_TrainerUI" then
+            self:StyleClassTrainerFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
     end)
-
+    
     self:SecureHook("UnitFrameHealthBar_Update", function(statusBar)
         self:StyleHealthBar(statusBar)
     end)
@@ -108,6 +107,7 @@ function Theme:ApplyTheme()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
+    self:StyleCooldownManagerBuffFrame()
 end
 
 function Theme:StyleButton(button)
@@ -390,8 +390,7 @@ function Theme:StylePlayerFrame()
 
     local function StyleFrameContent()
         local textures = {PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture,
-                          PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon,
-                          PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerRestLoop.RestTexture}
+                          PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon}
 
         for _, tex in pairs(textures) do
             if tex then
@@ -711,10 +710,7 @@ function Theme:StyleTooltips()
             return
         end
 
-        if frame.NineSlice then
-            self:StyleNineSlice(frame.NineSlice, self.COLORS.BLACK)
-        end
-
+        self:StyleNineSlice(frame.NineSlice, self.COLORS.BLACK)
         self:StyleTextureRegions(frame.CompareHeader, self.SECONDARY_COLOR)
     end
 
@@ -1136,7 +1132,7 @@ end
 
 function Theme:StyleCooldownManagerBuffFrame()
     local function StyleFrame()
-        self:StyleTextureRegionsAndChildren(BuffBarCooldownViewer, self.SECONDARY_COLOR, "BACKGROUND")
+        self:StyleTextureRegionsAndChildren(BuffBarCooldownViewer, self.MAIN_COLOR, "BACKGROUND")
     end
 
     self:SecureHookScript(BuffBarCooldownViewer, "OnShow", function()
@@ -1146,4 +1142,8 @@ function Theme:StyleCooldownManagerBuffFrame()
     self:SecureHookScript(CooldownViewerSettings, "OnHide", function()
         StyleFrame()
     end)
+end
+
+function Theme:StyleClassTrainerFrame()
+    self:StyleNineSlice(ClassTrainerFrame, self.MAIN_COLOR)
 end
