@@ -41,6 +41,7 @@ function Theme:OnEnable()
     self:SecureHookScript(self.events, "OnEvent", function(_, event, unit)
         if event == "PLAYER_ENTERING_WORLD" then
             self:StylePlayerAuras()
+            self:StyleCooldownManagerBuffFrame()
         elseif event == "UNIT_AURA" and unit == "player" then
             self:StylePlayerAuras()
         elseif event == "PLAYER_TARGET_CHANGED" or (event == "UNIT_AURA" and unit == "target") then
@@ -107,6 +108,150 @@ function Theme:ApplyTheme()
     self:StyleTomTom()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
+end
+
+function Theme:StyleButton(button)
+    if button.NormalTexture then
+        button.NormalTexture:SetVertexColor(unpack(self.MAIN_COLOR))
+    end
+
+    if button.PushedTexture then
+        button.PushedTexture:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    end
+
+    if button.HighlightTexture then
+        button.HighlightTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    end
+end
+
+function Theme:StyleIconFrame(frame, scaleH, scaleW)
+    if not frame then
+        return
+    end
+
+    local icon = frame.Icon or frame.icon
+
+    if not icon then
+        return
+    end
+
+    scaleH = scaleH == nil and 1 or scaleH;
+    scaleW = scaleW == nil and 1 or scaleW;
+
+    if not frame.__avuiBorder then
+        frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
+    end
+
+    local border = frame.__avuiBorder
+
+    border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
+    border:SetPoint("TOPLEFT", icon, "TOPLEFT", -scaleH, scaleW)
+    border:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", scaleH, -scaleW)
+    border:SetVertexColor(unpack(self.MAIN_COLOR))
+
+    -- Apply mask to clip sharp corners on the icon
+    if icon.SetMask then
+        icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
+    end
+
+    if frame.TempEnchantBorder then
+        frame.TempEnchantBorder:Hide()
+    end
+end
+
+function Theme:StyleTabButton(button)
+    if button then
+        local texs = {"Left", "Middle", "Right"}
+
+        for _, part in pairs(texs) do
+            local tex = button[part]
+
+            if tex then
+                tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
+            end
+        end
+    end
+end
+
+function Theme:StyleItemButtonPool(frame)
+    if frame then
+        for button, _ in frame.itemButtonPool:EnumerateActive() do
+            local tex = button.NormalTexture
+
+            if tex then
+                tex:SetVertexColor(unpack(self.MAIN_COLOR));
+            end
+        end
+    end
+end
+
+function Theme:StyleTextureRegions(frame, color, drawLayer)
+    if frame and frame.GetRegions then
+        for _, region in ipairs({frame:GetRegions()}) do
+            local name = region:GetDebugName() or ""
+            if region and region:IsObjectType("Texture") and (not region.IsForbidden or not region:IsForbidden()) then
+                if drawLayer and region.GetDrawLayer then
+                    local layer = region:GetDrawLayer()
+                    if not issecretvalue(layer) and layer == drawLayer then
+                        region:SetVertexColor(unpack(color))
+                    end
+                elseif not drawLayer then
+                    region:SetVertexColor(unpack(color))
+                end
+            end
+        end
+    end
+end
+
+function Theme:StyleTextureRegionsAndChildren(frame, color, drawLayer)
+    local function StyleFrameAndChildren(frame, color, drawLayer)
+        self:StyleTextureRegions(frame, color, drawLayer)
+
+        if frame and frame.GetChildren then
+            for _, child in ipairs({frame:GetChildren()}) do
+                if child and child.IsObjectType and child:IsObjectType("Frame") then
+                    StyleFrameAndChildren(child, color, drawLayer)
+                end
+            end
+        end
+    end
+
+    StyleFrameAndChildren(frame, color, drawLayer)
+end
+
+function Theme:StyleNineSlice(frame, color)
+    if not frame then
+        return
+    end
+
+    frame = frame.NineSlice or frame
+
+    local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
+                  "BottomLeftCorner", "BottomRightCorner"}
+
+    for _, part in ipairs(texs) do
+        local tex = frame[part]
+
+        if tex and not tex:IsForbidden() then
+            tex:SetVertexColor(unpack(color));
+        end
+    end
+end
+
+function Theme:StyleBg(frame, color)
+    if not frame then
+        return
+    end
+
+    local texs = {"TopSection", "BottomEdge", "BottomLeft", "BottomRight"}
+
+    for _, part in pairs(texs) do
+        local tex = frame[part]
+
+        if tex then
+            tex:SetVertexColor(unpack(color));
+        end
+    end
 end
 
 function Theme:StyleBarButtons()
@@ -989,122 +1134,16 @@ function Theme:StyleMailFrame()
     self:StyleNineSlice(SendMailMoneyInset, self.SECONDARY_COLOR)
 end
 
-function Theme:StyleButton(button)
-    if button.NormalTexture then
-        button.NormalTexture:SetVertexColor(unpack(self.MAIN_COLOR))
+function Theme:StyleCooldownManagerBuffFrame()
+    local function StyleFrame()
+        self:StyleTextureRegionsAndChildren(BuffBarCooldownViewer, self.SECONDARY_COLOR, "BACKGROUND")
     end
 
-    if button.PushedTexture then
-        button.PushedTexture:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
-    end
+    self:SecureHookScript(BuffBarCooldownViewer, "OnShow", function()
+        StyleFrame()
+    end)
 
-    if button.HighlightTexture then
-        button.HighlightTexture:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    end
-end
-
-function Theme:StyleIconFrame(frame, scaleH, scaleW)
-    if not frame then
-        return
-    end
-
-    local icon = frame.Icon or frame.icon
-
-    if not icon then
-        return
-    end
-
-    scaleH = scaleH == nil and 1 or scaleH;
-    scaleW = scaleW == nil and 1 or scaleW;
-
-    if not frame.__avuiBorder then
-        frame.__avuiBorder = frame:CreateTexture(nil, "OVERLAY")
-    end
-
-    local border = frame.__avuiBorder
-
-    border:SetTexture([[Interface\AddOns\avUI\Media\Textures\border.png]])
-    border:SetPoint("TOPLEFT", icon, "TOPLEFT", -scaleH, scaleW)
-    border:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", scaleH, -scaleW)
-    border:SetVertexColor(unpack(self.MAIN_COLOR))
-
-    -- Apply mask to clip sharp corners on the icon
-    if icon.SetMask then
-        icon:SetMask([[Interface\AddOns\avUI\Media\Textures\border_mask.png]])
-    end
-
-    if frame.TempEnchantBorder then
-        frame.TempEnchantBorder:Hide()
-    end
-end
-
-function Theme:StyleTabButton(button)
-    if button then
-        local texs = {"Left", "Middle", "Right"}
-
-        for _, part in pairs(texs) do
-            local tex = button[part]
-
-            if tex then
-                tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
-            end
-        end
-    end
-end
-
-function Theme:StyleItemButtonPool(frame)
-    if frame then
-        for button, _ in frame.itemButtonPool:EnumerateActive() do
-            local tex = button.NormalTexture
-
-            if tex then
-                tex:SetVertexColor(unpack(self.MAIN_COLOR));
-            end
-        end
-    end
-end
-
-function Theme:StyleTextureRegions(frame, color)
-    if frame and frame.GetRegions then
-        for _, region in ipairs({frame:GetRegions()}) do
-            if region and region:IsObjectType("Texture") then
-                region:SetVertexColor(unpack(color))
-            end
-        end
-    end
-end
-
-function Theme:StyleNineSlice(frame, color)
-    if not frame then
-        return
-    end
-
-    frame = frame.NineSlice or frame
-
-    local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
-                  "BottomLeftCorner", "BottomRightCorner"}
-
-    for _, part in ipairs(texs) do
-        local tex = frame[part]
-
-        if tex and not tex:IsForbidden() then
-            tex:SetVertexColor(unpack(color));
-        end
-    end
-end
-
-function Theme:StyleBg(frame, color)
-    if not frame then
-        return
-    end
-
-    local texs = {"TopSection", "BottomEdge", "BottomLeft", "BottomRight"}
-
-    for _, part in pairs(texs) do
-        local tex = frame[part]
-
-        if tex then
-            tex:SetVertexColor(unpack(color));
-        end
-    end
+    self:SecureHookScript(CooldownViewerSettings, "OnHide", function()
+        StyleFrame()
+    end)
 end
