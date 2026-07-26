@@ -51,11 +51,13 @@ function Theme:OnEnable()
             self:StyleAuctionHouseFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_TrainerUI" then
             self:StyleClassTrainerFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_HousingModelPreview" then
+            self:StyleHousingModelPreviewFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
     end)
-    
+
     self:SecureHook("UnitFrameHealthBar_Update", function(statusBar)
         self:StyleHealthBar(statusBar)
     end)
@@ -1150,4 +1152,8 @@ function Theme:StyleClassTrainerFrame()
     self:StyleNineSlice(ClassTrainerFrameBottomInset, self.SECONDARY_COLOR)
     ClassTrainerFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
     ClassTrainerFrameMoneyBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleHousingModelPreviewFrame()
+    self:StyleNineSlice(HousingModelPreviewFrame, self.MAIN_COLOR)
 end
