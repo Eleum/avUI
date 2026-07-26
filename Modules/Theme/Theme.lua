@@ -110,6 +110,7 @@ function Theme:ApplyTheme()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
     self:StyleCooldownManagerBuffFrame()
+    self:StyleProfessionsFrame()
 end
 
 function Theme:StyleButton(button)
@@ -169,7 +170,7 @@ function Theme:StyleTabButton(button)
             local tex = button[part]
 
             if tex then
-                tex:SetVertexColor(unpack(self.SECONDARY_COLOR))
+                tex:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
             end
         end
     end
@@ -1156,4 +1157,47 @@ end
 
 function Theme:StyleHousingModelPreviewFrame()
     self:StyleNineSlice(HousingModelPreviewFrame, self.MAIN_COLOR)
+end
+
+function Theme:StyleProfessionsFrame()
+    self:StyleNineSlice(ProfessionsFrame, self.MAIN_COLOR)
+    ProfessionsFrame.Bg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    for frame, _ in ProfessionsFrame.TabSystem.tabPool:EnumerateActive() do
+        self:StyleTabButton(frame)
+    end
+
+    ProfessionsFrame.CraftingPage.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    self:StyleNineSlice(ProfessionsFrame.CraftingPage.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
+
+    ProfessionsFrame.CraftingPage.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    self:StyleNineSlice(ProfessionsFrame.CraftingPage.SchematicForm, self.SECONDARY_COLOR)
+
+    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    self:StyleTextureRegions(ProfessionsFrame.SpecPage.TopDivider, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(ProfessionsFrame.SpecPage.VerticalDivider, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(ProfessionsFrame.SpecPage.PanelFooter, self.SECONDARY_COLOR)
+    ProfessionsFrame.SpecPage.DetailedView.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    ProfessionsFrame.SpecPage.TreeView.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+
+    ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
+    ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.NineSlice, self.SECONDARY_COLOR)
+
+    for _, frame in ipairs({ProfessionsFrame.OrdersPage.BrowseFrame.NpcOrdersButton,
+                            ProfessionsFrame.OrdersPage.BrowseFrame.GuildOrdersButton,
+                            ProfessionsFrame.OrdersPage.BrowseFrame.PublicOrdersButton,
+                            ProfessionsFrame.OrdersPage.BrowseFrame.PersonalOrdersButton}) do
+        self:StyleTabButton(frame)
+    end
+
+    self:SecureHook(ProfessionsFrame.SpecPage, "InitializeTabs", function(frame)
+        for button, _ in frame.tabsPool:EnumerateActive() do
+            self:StyleTabButton(button)
+        end
+    end)
 end
