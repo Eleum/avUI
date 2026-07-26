@@ -53,6 +53,8 @@ function Theme:OnEnable()
             self:StyleClassTrainerFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_HousingModelPreview" then
             self:StyleHousingModelPreviewFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_DelvesDifficultyPicker" then
+            self:StyleDelvesDifficultyPickerFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
@@ -230,7 +232,7 @@ function Theme:StyleNineSlice(frame, color)
     frame = frame.NineSlice or frame
 
     local texs = {"TopEdge", "BottomEdge", "Center", "Bg", "LeftEdge", "RightEdge", "TopLeftCorner", "TopRightCorner",
-                  "BottomLeftCorner", "BottomRightCorner"}
+                  "BottomLeftCorner", "BottomRightCorner", "BottomLeft", "BottomRight", "TopSection"}
 
     for _, part in ipairs(texs) do
         local tex = frame[part]
@@ -1169,6 +1171,8 @@ function Theme:StyleProfessionsFrame()
 
     self:StyleNineSlice(ProfessionsFrame.CraftingPage.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
     self:StyleNineSlice(ProfessionsFrame.CraftingPage.SchematicForm, self.SECONDARY_COLOR)
+    self:StyleNineSlice(ProfessionsFrame.CraftingPage.CraftingOutputLog, self.MAIN_COLOR)
+    self:StyleNineSlice(ProfessionsFrame.CraftingPage.CraftingOutputLog.Bg, self.SECONDARY_COLOR)
     ProfessionsFrame.CraftingPage.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     ProfessionsFrame.CraftingPage.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
@@ -1190,9 +1194,12 @@ function Theme:StyleProfessionsFrame()
     self:StyleNineSlice(ProfessionsFrame.OrdersPage.OrderView.OrderDetails, self.SECONDARY_COLOR)
     ProfessionsFrame.OrdersPage.OrderView.OrderInfo.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     ProfessionsFrame.OrdersPage.OrderView.OrderDetails.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(
+        self.SECONDARY_COLOR))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(
+        self.SECONDARY_COLOR))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(
+        self.SECONDARY_COLOR))
 
     for _, frame in ipairs({ProfessionsFrame.OrdersPage.BrowseFrame.NpcOrdersButton,
                             ProfessionsFrame.OrdersPage.BrowseFrame.GuildOrdersButton,
@@ -1214,4 +1221,9 @@ function Theme:StyleProfessionsFrame()
             end
         end
     end)
+end
+
+function Theme:StyleDelvesDifficultyPickerFrame()
+    self:StyleNineSlice(DelvesDifficultyPickerFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(DelvesDifficultyPickerFrame.Border, self.SECONDARY_COLOR)
 end
