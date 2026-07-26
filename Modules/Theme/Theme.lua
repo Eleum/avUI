@@ -1167,12 +1167,10 @@ function Theme:StyleProfessionsFrame()
         self:StyleTabButton(frame)
     end
 
-    ProfessionsFrame.CraftingPage.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     self:StyleNineSlice(ProfessionsFrame.CraftingPage.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
-
-    ProfessionsFrame.CraftingPage.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     self:StyleNineSlice(ProfessionsFrame.CraftingPage.SchematicForm, self.SECONDARY_COLOR)
-
+    ProfessionsFrame.CraftingPage.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    ProfessionsFrame.CraftingPage.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
     ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
     ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
@@ -1183,10 +1181,18 @@ function Theme:StyleProfessionsFrame()
     ProfessionsFrame.SpecPage.DetailedView.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
     ProfessionsFrame.SpecPage.TreeView.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
 
-    ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
-    ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.NineSlice, self.SECONDARY_COLOR)
+    ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+
+    self:StyleNineSlice(ProfessionsFrame.OrdersPage.OrderView.OrderInfo, self.SECONDARY_COLOR)
+    self:StyleNineSlice(ProfessionsFrame.OrdersPage.OrderView.OrderDetails, self.SECONDARY_COLOR)
+    ProfessionsFrame.OrdersPage.OrderView.OrderInfo.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
     for _, frame in ipairs({ProfessionsFrame.OrdersPage.BrowseFrame.NpcOrdersButton,
                             ProfessionsFrame.OrdersPage.BrowseFrame.GuildOrdersButton,
@@ -1198,6 +1204,14 @@ function Theme:StyleProfessionsFrame()
     self:SecureHook(ProfessionsFrame.SpecPage, "InitializeTabs", function(frame)
         for button, _ in frame.tabsPool:EnumerateActive() do
             self:StyleTabButton(button)
+        end
+    end)
+
+    self:SecureHook("OpenProfessionsItemFlyout", function(_, owner)
+        for _, child in ipairs({owner:GetChildren()}) do
+            if child.GetFrameStrata and child:GetFrameStrata() == "HIGH" then
+                self:StyleNineSlice(child, self.MAIN_COLOR)
+            end
         end
     end)
 end
