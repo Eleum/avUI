@@ -1169,46 +1169,49 @@ function Theme:StyleProfessionsFrame()
         self:StyleTabButton(frame)
     end
 
-    self:StyleNineSlice(ProfessionsFrame.CraftingPage.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
-    self:StyleNineSlice(ProfessionsFrame.CraftingPage.SchematicForm, self.SECONDARY_COLOR)
-    self:StyleNineSlice(ProfessionsFrame.CraftingPage.CraftingOutputLog, self.MAIN_COLOR)
-    self:StyleNineSlice(ProfessionsFrame.CraftingPage.CraftingOutputLog.Bg, self.SECONDARY_COLOR)
-    ProfessionsFrame.CraftingPage.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.CraftingPage.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
-    ProfessionsFrame.CraftingPage.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    local crafting = ProfessionsFrame.CraftingPage
 
-    self:StyleTextureRegions(ProfessionsFrame.SpecPage.TopDivider, self.SECONDARY_COLOR)
-    self:StyleTextureRegions(ProfessionsFrame.SpecPage.VerticalDivider, self.SECONDARY_COLOR)
-    self:StyleTextureRegions(ProfessionsFrame.SpecPage.PanelFooter, self.SECONDARY_COLOR)
-    ProfessionsFrame.SpecPage.DetailedView.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
-    ProfessionsFrame.SpecPage.TreeView.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    self:StyleNineSlice(crafting.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
+    self:StyleNineSlice(crafting.SchematicForm, self.SECONDARY_COLOR)
+    self:StyleNineSlice(crafting.CraftingOutputLog, self.MAIN_COLOR)
+    self:StyleNineSlice(crafting.CraftingOutputLog.Bg, self.SECONDARY_COLOR)
+    crafting.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    crafting.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    crafting.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    crafting.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    crafting.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
-    self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
-    self:StyleNineSlice(ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.NineSlice, self.SECONDARY_COLOR)
-    ProfessionsFrame.OrdersPage.BrowseFrame.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.OrdersPage.BrowseFrame.OrderList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    local spec = ProfessionsFrame.SpecPage
 
-    self:StyleNineSlice(ProfessionsFrame.OrdersPage.OrderView.OrderInfo, self.SECONDARY_COLOR)
-    self:StyleNineSlice(ProfessionsFrame.OrdersPage.OrderView.OrderDetails, self.SECONDARY_COLOR)
-    ProfessionsFrame.OrdersPage.OrderView.OrderInfo.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(
-        self.SECONDARY_COLOR))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(
-        self.SECONDARY_COLOR))
-    ProfessionsFrame.OrdersPage.OrderView.OrderDetails.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(
-        self.SECONDARY_COLOR))
+    self:StyleTextureRegions(spec.TopDivider, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(spec.VerticalDivider, self.SECONDARY_COLOR)
+    self:StyleTextureRegions(spec.PanelFooter, self.SECONDARY_COLOR)
+    spec.DetailedView.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    spec.TreeView.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
 
-    for _, frame in ipairs({ProfessionsFrame.OrdersPage.BrowseFrame.NpcOrdersButton,
-                            ProfessionsFrame.OrdersPage.BrowseFrame.GuildOrdersButton,
-                            ProfessionsFrame.OrdersPage.BrowseFrame.PublicOrdersButton,
-                            ProfessionsFrame.OrdersPage.BrowseFrame.PersonalOrdersButton}) do
+    local browse = ProfessionsFrame.OrdersPage.BrowseFrame
+
+    self:StyleNineSlice(browse.RecipeList.BackgroundNineSlice, self.SECONDARY_COLOR)
+    self:StyleNineSlice(browse.OrderList.NineSlice, self.SECONDARY_COLOR)
+    browse.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    browse.OrderList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+
+    for _, frame in ipairs({browse.NpcOrdersButton, browse.GuildOrdersButton, browse.PublicOrdersButton,
+                            browse.PersonalOrdersButton}) do
         self:StyleTabButton(frame)
     end
 
-    self:SecureHook(ProfessionsFrame.SpecPage, "InitializeTabs", function(frame)
+    local view = ProfessionsFrame.OrdersPage.OrderView
+
+    self:StyleNineSlice(view.OrderInfo, self.SECONDARY_COLOR)
+    self:StyleNineSlice(view.OrderDetails, self.SECONDARY_COLOR)
+    view.OrderInfo.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    view.OrderDetails.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    view.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    view.OrderDetails.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    view.OrderDetails.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    self:SecureHook(spec, "InitializeTabs", function(frame)
         for button, _ in frame.tabsPool:EnumerateActive() do
             self:StyleTabButton(button)
         end
