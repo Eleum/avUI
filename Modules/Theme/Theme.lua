@@ -1205,6 +1205,8 @@ function Theme:StyleProfessionsFrame()
 
     self:StyleNineSlice(view.OrderInfo, self.SECONDARY_COLOR)
     self:StyleNineSlice(view.OrderDetails, self.SECONDARY_COLOR)
+    self:StyleNineSlice(view.CraftingOutputLog, self.MAIN_COLOR)
+    self:StyleNineSlice(view.CraftingOutputLog.Bg, self.SECONDARY_COLOR)
     view.OrderInfo.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     view.OrderDetails.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     view.OrderDetails.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
