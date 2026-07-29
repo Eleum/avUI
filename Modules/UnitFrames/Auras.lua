@@ -237,10 +237,8 @@ function Auras:OnEnable()
             bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
             bar:GetStatusBarTexture():SetVertexColor(anchorFrame:GetTextColor())
 
-            local height = 1
-
-            bar:SetHeight(height)
-            bar:SetPoint("TOP", anchorFrame, "BOTTOM", 0, -height)
+            bar:SetHeight(1)
+            bar:SetPoint("TOP", anchorFrame, "BOTTOM", 0, -2)
             bar:SetPoint("LEFT", anchorFrame, "LEFT")
             bar:SetPoint("RIGHT", anchorFrame, "RIGHT")
             bar:SetFrameLevel(frame:GetFrameLevel())
