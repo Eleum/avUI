@@ -195,7 +195,6 @@ function Auras:OnEnable()
                 if fsName and fsName.IsShown and fsName:IsShown() then
                     local font, size, flags = fsName:GetFont()
                     local text = fsName.GetText and fsName:GetText() or ""
-
                     local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontDisable")
 
                     fs:SetText(text)
@@ -222,6 +221,7 @@ function Auras:OnEnable()
 
         local function AddAuraIconComponent(frame)
             local icon = frame:CreateTexture(nil, "ARTWORK")
+
             icon:SetAllPoints(frame)
             icon:SetAlpha(0)
 
@@ -311,8 +311,9 @@ function Auras:OnEnable()
         local container = frame.__avuiAuraContainer
 
         if container then
-            container:SetParent(nil)
             container:Hide()
+            container:SetEnabled(false)
+            container:SetParent(nil)
             frame.__avuiAuraContainer = nil
         end
 
