@@ -114,7 +114,6 @@ function Theme:ApplyTheme()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
     self:StyleCooldownManagerBuffFrame()
-    self:StyleProfessionsFrame()
 end
 
 function Theme:StyleButton(button)
