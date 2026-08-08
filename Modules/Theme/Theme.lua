@@ -24,8 +24,6 @@ function Theme:OnInitialize()
 end
 
 function Theme:OnEnable()
-    self:ApplyTheme()
-
     self.events:RegisterEvent("PLAYER_ENTERING_WORLD")
     self.events:RegisterEvent("PLAYER_TARGET_CHANGED")
     self.events:RegisterEvent("PLAYER_FOCUS_CHANGED")
@@ -55,6 +53,8 @@ function Theme:OnEnable()
             self:StyleHousingModelPreviewFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_DelvesDifficultyPicker" then
             self:StyleDelvesDifficultyPickerFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_WeeklyRewards" then
+            self:StyleWeeklyRewardsFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
             self:StyleNameplateForUnit(unit)
         end
@@ -71,6 +71,16 @@ function Theme:OnEnable()
     self:SecureHook(TomTom, "ShowHideCoordBlock", function()
         self:StyleTomTom()
     end)
+
+    local themed, err = xpcall(function()
+        self:ApplyTheme()
+    end, function(err)
+        return err .. "\n" .. debugstack()
+    end)
+
+    if not themed then
+        geterrorhandler()(err)
+    end
 end
 
 function Theme:OnDisable()
@@ -1231,4 +1241,23 @@ end
 function Theme:StyleDelvesDifficultyPickerFrame()
     self:StyleNineSlice(DelvesDifficultyPickerFrame, self.MAIN_COLOR)
     self:StyleNineSlice(DelvesDifficultyPickerFrame.Border, self.SECONDARY_COLOR)
+end
+
+function Theme:StyleWeeklyRewardsFrame()
+    WeeklyRewardsFrame.Background:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WeeklyRewardsFrame.BorderContainer.Border:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WeeklyRewardsFrame.BorderContainer.TopDecor:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WeeklyRewardsFrame.HeaderFrame.HeaderDivider:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    WeeklyRewardsFrame.RaidFrame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    WeeklyRewardsFrame.MythicFrame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+    WeeklyRewardsFrame.WorldFrame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+
+    WeeklyRewardsFrame.SelectRewardButton.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+
+    for _, frame in ipairs(WeeklyRewardsFrame.Activities) do
+        if frame.Background then
+            frame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
+        end
+    end
 end
