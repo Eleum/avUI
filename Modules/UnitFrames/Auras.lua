@@ -38,143 +38,6 @@ local auras = {
     }
 }
 
-local function ResetAura(frame, frameAuraInstanceMarker)
-    if not frame or not frame.GetName then
-        return
-    end
-
-    local name = frame:GetName()
-
-    if name then
-        local textFrame = _G[name .. "StatusText"]
-
-        if textFrame then
-            local color = frame.__avuiStatusTextColor or {0.5, 0.5, 0.5}
-            if frame.__avuiStatusTextFont then
-                textFrame:SetFont(unpack(frame.__avuiStatusTextFont))
-            else
-                textFrame:SetFontObject(GameFontDisable)
-            end
-            textFrame:SetTextColor(unpack(color))
-        end
-    end
-
-    frame[frameAuraInstanceMarker] = nil
-    frame.__avuiStatusTextFont = nil
-    frame.__avuiStatusTextColor = nil
-end
-
-local function ResetAuraChecked(frame, appliedAura)
-    if frame and appliedAura and appliedAura.frameInstanceMarker and frame[appliedAura.frameInstanceMarker] then
-        ResetAura(frame, appliedAura.frameInstanceMarker)
-    end
-end
-
-local function ResetValidUnitAuraChecked(frame, appliedAura)
-    local unit = UnitFrames:GetFrameUnit(frame)
-
-    if not unit or not UnitFrames:IsPartyOrRaidUnit(unit) then
-        return
-    end
-
-    ResetAuraChecked(frame, appliedAura)
-end
-
-local function ApplyAura(frame, blizzAuras, appliedAura)
-    if not frame or not blizzAuras or not appliedAura then
-        return
-    end
-
-    if blizzAuras.addedAuras then
-        for _, aura in ipairs(blizzAuras.addedAuras) do
-            if not frame:IsForbidden() and not issecretvalue(aura.spellId) and aura.spellId == appliedAura.spellId and
-                (not appliedAura.sourceUnit or aura.sourceUnit == appliedAura.sourceUnit) then
-
-                if appliedAura.cleanBeforeApply then
-                    ResetAuraChecked(frame, appliedAura)
-                end
-
-                local name = frame:GetName()
-
-                if name then
-                    local textString = _G[name .. "StatusText"]
-
-                    if textString and textString:IsShown() then
-                        if appliedAura.frameInstanceMarker then
-                            frame[appliedAura.frameInstanceMarker] = aura.auraInstanceID
-                        end
-
-                        local font, size, flags = textString:GetFont()
-
-                        frame.__avuiStatusTextFont = {font, size, flags}
-                        frame.__avuiStatusTextColor = {textString:GetTextColor()}
-
-                        textString:SetFont(font, size, "OUTLINE")
-                        textString:SetTextColor(unpack(appliedAura.color))
-                    end
-                end
-
-                break
-            end
-        end
-    end
-
-    if appliedAura.frameInstanceMarker then
-        local marker = appliedAura.frameInstanceMarker
-        local auraInstance = frame[marker]
-
-        if blizzAuras.removedAuraInstanceIDs and auraInstance then
-            for _, aura in ipairs(blizzAuras.removedAuraInstanceIDs) do
-                if aura == auraInstance or (frame.displayedUnit and UnitIsDeadOrGhost(frame.displayedUnit)) then
-                    ResetAura(frame, marker)
-                    break
-                end
-            end
-        end
-    end
-end
-
-local function ApplyUnitAura(unit, blizzAuras, appliedAura)
-    local function ApplyUnitFrameAura(frame, unit)
-        local frameUnit = UnitFrames:GetFrameUnit(frame)
-
-        if frameUnit and frameUnit == unit then
-            ApplyAura(frame, blizzAuras, appliedAura)
-        end
-    end
-
-    if not UnitFrames:IsPartyOrRaidUnit(unit) then
-        return
-    end
-
-    if UnitInRaid(unit) then
-        -- TODO: check cvar for raid grouping
-        for _, frame in ipairs(UnitFrames.framesRaidSplit) do
-            ApplyUnitFrameAura(_G[frame], unit)
-        end
-    else
-        for _, frame in ipairs(UnitFrames.framesParty) do
-            ApplyUnitFrameAura(_G[frame], unit)
-        end
-    end
-end
-
-local function ApplyAtonementAura(event, unit, blizzAuras)
-    ApplyUnitAura(unit, blizzAuras, auras.Atonement)
-end
-
-local function ResetAtonementAura(frame)
-    ResetValidUnitAuraChecked(frame, auras.Atonement)
-end
-
-local function ApplyRenewingMistAura(event, unit, blizzAuras)
-    ApplyUnitAura(unit, blizzAuras, auras.RenewingMist)
-end
-
-local function ResetRenewingMistAura(frame)
-    ResetValidUnitAuraChecked(frame, auras.RenewingMist)
-end
-
 function Auras:OnEnable()
     local function CreateFrameAuraContainer(frame)
         local container = CreateFrame("AuraContainer", nil, frame, "CustomAuraContainerTemplate")
@@ -201,16 +64,10 @@ function Auras:OnEnable()
                     fs:SetWordWrap(false)
                     fs:SetFont(font, size, "OUTLINE")
                     fs:SetTextColor(unpack(HexToRGB("#ffd444")))
-                    fs:SetWidth(fsName:GetWidth())
+                    fs:SetWidth(fsName:GetWidth() + 2) -- offset for outline
                     fs:SetPoint("TOPLEFT", fsName, "TOPLEFT")
-
-                    if fsName.GetJustifyH and fsName.SetJustifyH then
-                        fs:SetJustifyH(fsName:GetJustifyH())
-                    end
-
-                    if fsName.GetJustifyV and fsName.SetJustifyV then
-                        fs:SetJustifyV(fsName:GetJustifyV())
-                    end
+                    fs:SetJustifyH(fsName:GetJustifyH())
+                    fs:SetJustifyV(fsName:GetJustifyV())
 
                     return fs
                 end
@@ -264,28 +121,10 @@ function Auras:OnEnable()
         end
 
         local fs = AddParentFrameNameComponent(frame, parent)
-        -- AddAuraIconComponent(frame)
 
         if fs then
             AddStatusBarComponent(frame, fs, fs:GetTextColor())
         end
-
-        -- frame:SetSize(32, 32)
-
-        -- frame.bg = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
-        -- frame.bg:SetAllPoints(frame)
-        -- frame.bg:SetColorTexture(1, .83, .27, .5)
-        -- frame.bg:SetBlendMode("ADD")
-        -- frame.bg:SetBlendMode("MOD")
-        -- frame.bg:SetBlendMode("BLEND")
-
-        -- frame.cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
-        -- frame.cooldown:SetAllPoints(frame)
-        -- frame:SetDurationCooldown(frame.cooldown)
-
-        -- if frame.SetHideTooltipInCombat then
-        --     frame:SetHideTooltipInCombat(true)
-        -- end
     end
 
     local function CreateAuraContainerSlot()
@@ -328,19 +167,33 @@ function Auras:OnEnable()
         end
 
         local container = CreateFrameAuraContainer(frame)
-
         local slot = CreateAuraContainerSlot()
-        container:AddAuraSlot(unpack(slot))
 
+        container:AddAuraSlot(unpack(slot))
         container:SetUnit(unit)
         container:UpdateAllAuras()
 
         frame.__avuiAuraContainer = container
     end
 
-    self:SecureHook("CompactUnitFrame_SetUnit", function(frame)
-        CreateAuraContainer(frame)
-    end)
+    local function RefreshAuraContainers()
+        if UnitInRaid("player") then
+            for i = 1, MAX_RAID_MEMBERS do
+                local frame = _G["CompactRaidFrame" .. i]
+
+                CreateAuraContainer(frame)
+            end
+        else
+            for i = 1, 5 do
+                local frame = _G["CompactPartyFrameMember" .. i]
+
+                CreateAuraContainer(frame)
+            end
+        end
+    end
+
+    self:RegisterEvent("READY_CHECK", RefreshAuraContainers)
+    self:SecureHook("CompactUnitFrame_SetUnit", CreateAuraContainer)
 end
 
 function Auras:OnDisable()

@@ -53,8 +53,6 @@ function Theme:OnEnable()
             self:StyleHousingModelPreviewFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_DelvesDifficultyPicker" then
             self:StyleDelvesDifficultyPickerFrame()
-        elseif event == "ADDON_LOADED" and unit == "Blizzard_Professions" then
-            self:StyleProfessionsFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_WeeklyRewards" then
             self:StyleWeeklyRewardsFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
@@ -124,6 +122,7 @@ function Theme:ApplyTheme()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
     self:StyleCooldownManagerBuffFrame()
+    self:StyleProfessionsFrame()
 end
 
 function Theme:StyleButton(button)
@@ -544,7 +543,7 @@ function Theme:StyleHealthBar(statusBar)
     if UnitIsPlayer(unit) and UnitIsConnected(unit) then
         local _, class = UnitClass(unit)
 
-        if class then
+        if class and not issecretvalue(class) then
             local color = RAID_CLASS_COLORS[class]
             statusBar:SetStatusBarColor(color.r, color.g, color.b)
         end
