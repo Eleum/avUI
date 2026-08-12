@@ -1157,6 +1157,8 @@ function Theme:StyleCooldownManagerBuffFrame()
     self:SecureHookScript(CooldownViewerSettings, "OnHide", function()
         StyleFrame()
     end)
+
+    StyleFrame()
 end
 
 function Theme:StyleClassTrainerFrame()
