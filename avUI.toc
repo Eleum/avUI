@@ -1,4 +1,4 @@
-## Interface: 120007
+## Interface: 120100
 ## Title: av|cffc08dffUI|r
 ## Author: AVikend
 ## Version: 0.5
@@ -24,7 +24,6 @@ Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
 Modules\UnitFrames\Auras.lua
 Modules\UnitFrames\Defensives.lua
-Modules\UnitFrames\Health.lua
 Modules\Nameplates\Mouseover.lua
 Modules\Nameplates\Opacity.lua
 Modules\Nameplates\Execute.lua

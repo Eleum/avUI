@@ -53,6 +53,8 @@ function Theme:OnEnable()
             self:StyleHousingModelPreviewFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_DelvesDifficultyPicker" then
             self:StyleDelvesDifficultyPickerFrame()
+        elseif event == "ADDON_LOADED" and unit == "Blizzard_Professions" then
+            self:StyleProfessionsFrame()
         elseif event == "ADDON_LOADED" and unit == "Blizzard_WeeklyRewards" then
             self:StyleWeeklyRewardsFrame()
         elseif event == "NAME_PLATE_UNIT_ADDED" then
@@ -122,7 +124,6 @@ function Theme:ApplyTheme()
     self:StyleFrogskisGcdBar()
     self:StylePGF()
     self:StyleCooldownManagerBuffFrame()
-    self:StyleProfessionsFrame()
 end
 
 function Theme:StyleButton(button)
@@ -1187,9 +1188,11 @@ function Theme:StyleProfessionsFrame()
     self:StyleNineSlice(crafting.CraftingOutputLog.Bg, self.SECONDARY_COLOR)
     crafting.RecipeList.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     crafting.SchematicForm.Background:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
+    crafting.SchematicForm.MinimalBackground:SetVertexColor(unpack(self.COLORS.DIM_WHITE))
     crafting.SchematicForm.Details.BackgroundTop:SetVertexColor(unpack(self.SECONDARY_COLOR))
     crafting.SchematicForm.Details.BackgroundMiddle:SetVertexColor(unpack(self.SECONDARY_COLOR))
     crafting.SchematicForm.Details.BackgroundBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    crafting.SchematicForm.Details.BackgroundMinimized:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
     local spec = ProfessionsFrame.SpecPage
 
