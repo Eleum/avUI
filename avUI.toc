@@ -23,7 +23,6 @@ Modules\Theme\Theme.lua
 Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
 Modules\UnitFrames\Auras.lua
-Modules\UnitFrames\Defensives.lua
 Modules\Nameplates\Mouseover.lua
 Modules\Nameplates\Opacity.lua
 Modules\Nameplates\Execute.lua
