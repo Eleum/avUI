@@ -874,7 +874,7 @@ function Theme:StylePopups()
     self:StyleNineSlice(LFGDungeonReadyDialog.Border, self.SECONDARY_COLOR)
     self:StyleNineSlice(LFGDungeonReadyStatus.Border, self.SECONDARY_COLOR)
     AddActivityReadyTimer(LFGDungeonReadyDialog)
-    -- rch
+    self:StyleNineSlice(LFGListApplicationDialog.Border, self.SECONDARY_COLOR)
 end
 
 function Theme:StyleGameMenu()
