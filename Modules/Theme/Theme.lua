@@ -992,6 +992,10 @@ end
 
 function Theme:StylePlayerSpellsFrame()
     local function StyleFrame(frame)
+        if not frame then
+            return
+        end
+
         self:StyleNineSlice(frame, self.MAIN_COLOR)
         frame.TalentsFrame.BottomBar:SetVertexColor(unpack(self.MAIN_COLOR))
 
@@ -1002,16 +1006,7 @@ function Theme:StylePlayerSpellsFrame()
         self:StyleNineSlice(HeroTalentsSelectionDialog, self.MAIN_COLOR)
     end
 
-    local frame = PlayerSpellsFrame
-
-    if frame then
-        StyleFrame(frame)
-    else
-        self:SecureHook(PlayerSpellsFrameMixin, "OnLoad", function(frame)
-            StyleFrame(frame)
-        end)
-    end
-
+    StyleFrame(PlayerSpellsFrame)
     OverlayPlayerCastingBarFrame.Border:SetVertexColor(unpack(self.MAIN_COLOR))
 end
 
