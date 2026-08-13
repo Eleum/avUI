@@ -996,7 +996,7 @@ function Theme:StylePlayerSpellsFrame()
         frame.TalentsFrame.BottomBar:SetVertexColor(unpack(self.MAIN_COLOR))
 
         for f, _ in frame.TabSystem.tabPool:EnumerateActive() do
-            self.StyleTabButton(f)
+            self:StyleTabButton(f)
         end
 
         self:StyleNineSlice(HeroTalentsSelectionDialog, self.MAIN_COLOR)
