@@ -192,7 +192,8 @@ function Auras:OnEnable()
         end
     end
 
-    self:RegisterEvent("READY_CHECK", RefreshAuraContainers)
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", RefreshAuraContainers)
+    self:RegisterEvent("RAID_ROSTER_UPDATE", RefreshAuraContainers)
     self:SecureHook("CompactUnitFrame_SetUnit", CreateAuraContainer)
 end
 
