@@ -24,19 +24,11 @@ end
 local auras = {
     Atonement = {
         spellId = 194384,
-        sourceUnit = "player",
-        color = HexToRGB("#ffd444"),
-        frameInstanceMarker = "__avuiAtonementInstanceId",
-        cleanBeforeApply = true
-    },
-    RenewingMist = {
-        spellId = 119611,
-        sourceUnit = "player",
-        color = HexToRGB("#ffd444"),
-        frameInstanceMarker = "__avuiRenewingMistInstanceId",
-        cleanBeforeApply = true
+        color = HexToRGB("#ffd444")
     }
 }
+
+local unknownNameCheckRunning = false;
 
 function Auras:OnEnable()
     local function CreateFrameAuraContainer(frame)
@@ -48,8 +40,8 @@ function Auras:OnEnable()
         return container
     end
 
-    local function InitializeFrame(frame)
-        local function AddParentFrameNameComponent(frame, parentFrame)
+    local function InitializeAuraFrame(frame, aura)
+        local function AddParentFrameNameComponent(frame, parentFrame, color)
             local name = parentFrame.GetName and parentFrame:GetName()
 
             if name then
@@ -63,7 +55,7 @@ function Auras:OnEnable()
                     fs:SetText(text)
                     fs:SetWordWrap(false)
                     fs:SetFont(font, size, "OUTLINE")
-                    fs:SetTextColor(unpack(HexToRGB("#ffd444")))
+                    fs:SetTextColor(unpack(color or {1, 1, 1}))
                     fs:SetWidth(fsName:GetWidth() + 2) -- offset for outline
                     fs:SetPoint("TOPLEFT", fsName, "TOPLEFT")
                     fs:SetJustifyH(fsName:GetJustifyH())
@@ -80,7 +72,7 @@ function Auras:OnEnable()
             local icon = frame:CreateTexture(nil, "ARTWORK")
 
             icon:SetAllPoints(frame)
-            icon:SetAlpha(0)
+            icon:SetAlpha(1)
 
             frame:SetIcon(icon)
             frame:SetSize(32, 32)
@@ -92,7 +84,7 @@ function Auras:OnEnable()
             local bar = CreateFrame("StatusBar", nil, frame)
 
             bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
-            bar:GetStatusBarTexture():SetVertexColor(anchorFrame:GetTextColor())
+            bar:GetStatusBarTexture():SetVertexColor(unpack(color or {1, 1, 1}))
 
             bar:SetHeight(1)
             bar:SetPoint("TOP", anchorFrame, "BOTTOM", 0, -2)
@@ -120,23 +112,25 @@ function Auras:OnEnable()
             return
         end
 
-        local fs = AddParentFrameNameComponent(frame, parent)
+        local fs = AddParentFrameNameComponent(frame, parent, aura.color)
 
         if fs then
-            AddStatusBarComponent(frame, fs, fs:GetTextColor())
+            AddStatusBarComponent(frame, fs, aura.color)
         end
     end
 
-    local function CreateAuraContainerSlot()
+    local function CreateAuraContainerSlot(aura)
         local key = "slot1"
         local filter = "HELPFUL|PLAYER"
         local options = {
             candidateFilters = {
                 includeSpellIDs = {
-                    [194384] = true
+                    [aura.spellId] = true
                 }
             },
-            initializeFrame = InitializeFrame
+            initializeFrame = function(frame)
+                InitializeAuraFrame(frame, aura)
+            end
         }
 
         return {key, filter, options}
@@ -167,7 +161,7 @@ function Auras:OnEnable()
         end
 
         local container = CreateFrameAuraContainer(frame)
-        local slot = CreateAuraContainerSlot()
+        local slot = CreateAuraContainerSlot(auras.Atonement)
 
         container:AddAuraSlot(unpack(slot))
         container:SetUnit(unit)
@@ -177,23 +171,63 @@ function Auras:OnEnable()
     end
 
     local function RefreshAuraContainers()
-        if UnitInRaid("player") then
-            for i = 1, MAX_RAID_MEMBERS do
-                local frame = _G["CompactRaidFrame" .. i]
+        UnitFrames:ForEachCurrentFrame(function(frame)
+            CreateAuraContainer(frame)
+        end)
+    end
 
-                CreateAuraContainer(frame)
-            end
-        else
-            for i = 1, 5 do
-                local frame = _G["CompactPartyFrameMember" .. i]
+    local function RefreshUnknownAuraContainers()
+        local function CheckUnknownName(frame)
+            local name = frame and frame.GetName and frame:GetName()
 
-                CreateAuraContainer(frame)
+            if name then
+                local fsName = _G[name .. "Name"]
+
+                if fsName and fsName.IsShown and fsName:IsShown() and fsName.IsForbidden and not fsName:IsForbidden() then
+                    local text = fsName.GetText and fsName:GetText() or ""
+
+                    if not issecretvalue(text) and
+                        (text == UNKNOWNOBJECT or text == LFG_FOLLOWER_NAME_PREFIX:format(UNKNOWNOBJECT)) then
+                        return true
+                    end
+                end
             end
+
+            return false
+        end
+
+        print("checking for unknown names")
+
+        local unknownFound = false
+
+        UnitFrames:ForEachCurrentFrame(function(frame)
+            if CheckUnknownName(frame) then
+                CreateAuraContainer(frame)
+                unknownFound = true
+            end
+        end)
+
+        if unknownFound then
+            print("unknown found, refreshing in 1s")
+            unknownNameCheckRunning = true
+            C_Timer.After(1, RefreshUnknownAuraContainers)
+            return
+        end
+
+        print("finished checking for unknown names")
+        unknownNameCheckRunning = false
+    end
+
+    local function RefreshAuras()
+        RefreshAuraContainers()
+
+        if not unknownNameCheckRunning then
+            RefreshUnknownAuraContainers()
         end
     end
 
-    self:RegisterEvent("GROUP_ROSTER_UPDATE", RefreshAuraContainers)
-    self:RegisterEvent("RAID_ROSTER_UPDATE", RefreshAuraContainers)
+    self:RegisterEvent("GROUP_ROSTER_UPDATE", RefreshAuras)
+    self:RegisterEvent("RAID_ROSTER_UPDATE", RefreshAuras)
     self:SecureHook("CompactUnitFrame_SetUnit", CreateAuraContainer)
 end
 

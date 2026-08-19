@@ -42,3 +42,25 @@ function UnitFrames:GetFrameUnit(frame)
 
     return frame.displayedUnit
 end
+
+function UnitFrames:IsPartyOrRaidUnitFrame(frame)
+    local unit = UnitFrames:GetFrameUnit(frame)
+
+    return UnitFrames:IsPartyOrRaidUnit(unit)
+end
+
+function UnitFrames:ForEachCurrentFrame(action)
+    if UnitInRaid("player") then
+        for i = 1, MAX_RAID_MEMBERS do
+            local frame = _G["CompactRaidFrame" .. i]
+
+            action(frame)
+        end
+    else
+        for i = 1, 5 do
+            local frame = _G["CompactPartyFrameMember" .. i]
+
+            action(frame)
+        end
+    end
+end
