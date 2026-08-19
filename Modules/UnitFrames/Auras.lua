@@ -195,9 +195,7 @@ function Auras:OnEnable()
 
             return false
         end
-
-        print("checking for unknown names")
-
+        
         local unknownFound = false
 
         UnitFrames:ForEachCurrentFrame(function(frame)
@@ -208,13 +206,11 @@ function Auras:OnEnable()
         end)
 
         if unknownFound then
-            print("unknown found, refreshing in 1s")
             unknownNameCheckRunning = true
             C_Timer.After(1, RefreshUnknownAuraContainers)
             return
         end
 
-        print("finished checking for unknown names")
         unknownNameCheckRunning = false
     end
 
