@@ -1,4 +1,4 @@
-local Auras = avUI:NewModule("avUI.Nameplates.Auras.V2", "AceHook-3.0", "AceEvent-3.0")
+local Auras = avUI:NewModule("avUI.UnitFrames.Auras", "AceHook-3.0", "AceEvent-3.0")
 local UnitFrames = avUI:GetModule("avUI.UnitFrames")
 
 function Auras:OnInitialize()
@@ -195,7 +195,7 @@ function Auras:OnEnable()
 
             return false
         end
-        
+
         local unknownFound = false
 
         UnitFrames:ForEachCurrentFrame(function(frame)
