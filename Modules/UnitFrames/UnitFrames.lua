@@ -32,7 +32,7 @@ function UnitFrames:OnInitialize()
 end
 
 function UnitFrames:IsPartyOrRaidUnit(unit)
-    return type(unit) == "string" and (unit == "player" or unit:match("^party%d$") or unit:match("^raid%d%d?$"))
+    return UnitInParty(unit) or UnitInRaid(unit)
 end
 
 function UnitFrames:GetFrameUnit(frame)
@@ -49,7 +49,7 @@ function UnitFrames:IsPartyOrRaidUnitFrame(frame)
     return UnitFrames:IsPartyOrRaidUnit(unit)
 end
 
-function UnitFrames:ForEachCurrentFrame(action)
+function UnitFrames:ForEachPartyFrameUnchecked(action)
     if UnitInRaid("player") then
         for i = 1, MAX_RAID_MEMBERS do
             local frame = _G["CompactRaidFrame" .. i]

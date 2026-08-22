@@ -171,7 +171,7 @@ function Auras:OnEnable()
     end
 
     local function RefreshAuraContainers()
-        UnitFrames:ForEachCurrentFrame(function(frame)
+        UnitFrames:ForEachPartyFrameUnchecked(function(frame)
             CreateAuraContainer(frame)
         end)
     end
@@ -188,6 +188,7 @@ function Auras:OnEnable()
 
                     if not issecretvalue(text) and
                         (text == UNKNOWNOBJECT or text == LFG_FOLLOWER_NAME_PREFIX:format(UNKNOWNOBJECT)) then
+                        print("DEBUG: unknown for ", frame.unit, frame:GetName(), "with text", text)
                         return true
                     end
                 end
@@ -198,7 +199,7 @@ function Auras:OnEnable()
 
         local unknownFound = false
 
-        UnitFrames:ForEachCurrentFrame(function(frame)
+        UnitFrames:ForEachPartyFrameUnchecked(function(frame)
             if CheckUnknownName(frame) then
                 CreateAuraContainer(frame)
                 unknownFound = true
@@ -206,11 +207,13 @@ function Auras:OnEnable()
         end)
 
         if unknownFound then
+            print("DEBUG: unknown found, refreshing in 2s")
             unknownNameCheckRunning = true
-            C_Timer.After(1, RefreshUnknownAuraContainers)
+            C_Timer.After(2, RefreshUnknownAuraContainers)
             return
         end
 
+        print("DEBUG: no unknowns found")
         unknownNameCheckRunning = false
     end
 
