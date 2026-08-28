@@ -1244,8 +1244,10 @@ end
 
 function Theme:StyleWeeklyRewardsFrame()
     WeeklyRewardsFrame.Background:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
     WeeklyRewardsFrame.BorderContainer.Border:SetVertexColor(unpack(self.SECONDARY_COLOR))
     WeeklyRewardsFrame.BorderContainer.TopDecor:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    
     WeeklyRewardsFrame.HeaderFrame.HeaderDivider:SetVertexColor(unpack(self.SECONDARY_COLOR))
 
     WeeklyRewardsFrame.RaidFrame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
@@ -1259,4 +1261,8 @@ function Theme:StyleWeeklyRewardsFrame()
             frame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
         end
     end
+    
+    self:SecureHook(WeeklyRewardsFrame, "UpdateOverlay", function()
+        self:StyleNineSlice(WeeklyRewardsFrame.Overlay, self.SECONDARY_COLOR) 
+    end)
 end
