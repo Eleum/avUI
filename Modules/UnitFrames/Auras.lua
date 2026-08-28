@@ -213,7 +213,6 @@ function Auras:OnEnable()
             return
         end
 
-        print("DEBUG: no unknowns found")
         unknownNameCheckRunning = false
     end
 
