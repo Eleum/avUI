@@ -10,12 +10,13 @@
 ## Modules
 
 > [!INFO]
-> No manual module configuration is present at the moment, all modules are **enabled** by default, unless stated otherwise.
+> No manual module configuration is present at the moment, all modules are **enabled** by default.
 
 - `Theme.lua` &mdash; darker theme for the default Blizzard UI.
 - `UnitFrames`
   - `Absorbs.lua` &mdash; _Overabsorb_ display on raid-style party frames;
-  - `Auras.lua` &mdash; Coloring of StatusText part on raid-style party frames when any of these buffs are present:  _Atonement_;
+  - `Auras.lua` &mdash; Coloring of Name FontString part on raid-style party frames along with the duration bar display when any of these buffs are present:  _Atonement_;
+  - `MountMatch.lua` &mdash; Button to summon the same mount your target has.
 - `Nameplates`
   - `Mouseover.lua` &mdash; Border display around the mouseovered nameplate;
   - `Opacity.lua` &mdash; Opacity configuration for the non-focused nameplates;
