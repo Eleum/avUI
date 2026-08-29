@@ -11,19 +11,22 @@ local function GetTargetMountID()
         return nil
     end
 
-    local foundMountID
+    local slots = {C_UnitAuras.GetAuraSlots("target", "HELPFUL")}
 
-    AuraUtil.ForEachAura("target", "HELPFUL", nil, function(auraData)
-        if auraData and auraData.spellId then
-            local mountID = C_MountJournal.GetMountFromSpell(auraData.spellId)
-            if mountID then
-                foundMountID = mountID
-                return true -- stop iterating
+    for i = 2, #slots do
+        local slot = slots[i]
+        local aura = C_UnitAuras.GetAuraDataBySlot("target", slot)
+
+        if aura and aura.spellId and not issecretvalue(aura.spellId) then
+            local mount = C_MountJournal.GetMountFromSpell(aura.spellId)
+
+            if mount then
+                return mount
             end
         end
-    end, true)
+    end
 
-    return foundMountID
+    return nil
 end
 
 local function UpdateButton()
