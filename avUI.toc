@@ -1,12 +1,14 @@
 ## Interface: 120100
 ## Title: av|cffc08dffUI|r
 ## Author: AVikend
-## Version: 0.5
+## Version: 0.6
 ## Notes: Blizzard default UI enhancements and theming
 ## IconTexture: Interface\Icons\ability_priest_spiritoftheredeemer
 
 ## Category-enUS: User Interface
 ## Category-ruRU: Интерфейс пользователя
+
+## OptionalDeps: Masque
 
 ## Libs
 Libs\LibStub\LibStub.lua
@@ -23,6 +25,7 @@ Modules\Theme\Theme.lua
 Modules\UnitFrames\UnitFrames.lua
 Modules\UnitFrames\Absorbs.lua
 Modules\UnitFrames\Auras.lua
+Modules\UnitFrames\MountMatch.lua
 Modules\Nameplates\Mouseover.lua
 Modules\Nameplates\Opacity.lua
 Modules\Nameplates\Execute.lua
