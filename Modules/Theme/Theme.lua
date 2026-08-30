@@ -123,6 +123,7 @@ function Theme:ApplyTheme()
     self:StylePGF()
     self:StyleCooldownManagerBuffFrame()
     self:StyleProfessionsFrame()
+    self:StyleWorldMapFrame()
 end
 
 function Theme:StyleButton(button)
@@ -1265,4 +1266,15 @@ function Theme:StyleWeeklyRewardsFrame()
     self:SecureHook(WeeklyRewardsFrame, "UpdateOverlay", function()
         self:StyleNineSlice(WeeklyRewardsFrame.Overlay, self.SECONDARY_COLOR) 
     end)
+end
+
+function Theme:StyleWorldMapFrame()
+    self:StyleNineSlice(WorldMapFrame.BorderFrame, self.MAIN_COLOR)
+    WorldMapFrameBg:SetVertexColor(unpack(self.SECONDARY_COLOR))
+
+    WorldMapFrame.NavBar.InsetBorderBottom:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WorldMapFrame.NavBar.InsetBorderBottomLeft:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WorldMapFrame.NavBar.InsetBorderBottomRight:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WorldMapFrame.NavBar.InsetBorderLeft:SetVertexColor(unpack(self.SECONDARY_COLOR))
+    WorldMapFrame.NavBar.InsetBorderRight:SetVertexColor(unpack(self.SECONDARY_COLOR))
 end
