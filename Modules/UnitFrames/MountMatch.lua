@@ -7,26 +7,23 @@ local MSQ = LibStub("Masque", true)
 local MasqueGroup = MSQ and MSQ:Group("avUI", "Mount Match")
 
 local function GetTargetMountID()
-    if not UnitExists("target") or InCombatLockdown() then
+    if not UnitExists("target") or C_Secrets.ShouldAurasBeSecret() then
         return nil
     end
 
-    local slots = {C_UnitAuras.GetAuraSlots("target", "HELPFUL")}
+    local mount
 
-    for i = 2, #slots do
-        local slot = slots[i]
-        local aura = C_UnitAuras.GetAuraDataBySlot("target", slot)
-
-        if aura and aura.spellId and not issecretvalue(aura.spellId) then
-            local mount = C_MountJournal.GetMountFromSpell(aura.spellId)
+    AuraUtil.ForEachAura("target", "HELPFUL", nil, function(aura)
+        if aura and aura.spellId then
+            mount = C_MountJournal.GetMountFromSpell(aura.spellId)
 
             if mount then
-                return mount
+                return true
             end
         end
-    end
+    end, true)
 
-    return nil
+    return mount
 end
 
 local function UpdateButton()
