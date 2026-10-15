@@ -124,6 +124,7 @@ function Theme:ApplyTheme()
     self:StyleCooldownManagerBuffFrame()
     self:StyleProfessionsFrame()
     self:StyleWorldMapFrame()
+    self:StyleDelvesCompanionFrame()
 end
 
 function Theme:StyleButton(button)
@@ -1277,4 +1278,10 @@ function Theme:StyleWorldMapFrame()
     WorldMapFrame.NavBar.InsetBorderBottomRight:SetVertexColor(unpack(self.SECONDARY_COLOR))
     WorldMapFrame.NavBar.InsetBorderLeft:SetVertexColor(unpack(self.SECONDARY_COLOR))
     WorldMapFrame.NavBar.InsetBorderRight:SetVertexColor(unpack(self.SECONDARY_COLOR))
+end
+
+function Theme:StyleDelvesCompanionFrame()
+    self:StyleNineSlice(DelvesCompanionConfigurationFrame, self.MAIN_COLOR)
+    self:StyleNineSlice(DelvesCompanionConfigurationFrame.Border, self.SECONDARY_COLOR)
+    DelvesCompanionConfigurationFrame.Background:SetVertexColor(unpack(self.COLORS.LIGHT_GRAY))
 end
