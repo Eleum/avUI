@@ -28,6 +28,7 @@ local auras = {
     }
 }
 
+local shouldCheckForUnknownNames = true;
 local unknownNameCheckRunning = false;
 
 local function CreateFrameAuraContainer(frame)
@@ -40,28 +41,38 @@ local function CreateFrameAuraContainer(frame)
 end
 
 local function InitializeAuraFrame(frame, aura)
-    local function AddParentFrameNameComponent(frame, parentFrame, color)
-        local name = parentFrame.GetName and parentFrame:GetName()
+    local function GetFrameNameFontString(frame)
+        local name = frame.GetName and frame:GetName()
 
         if name then
             local fsName = _G[name .. "Name"]
 
             if fsName and fsName.IsShown and fsName:IsShown() then
-                local font, size, flags = fsName:GetFont()
-                local text = fsName.GetText and fsName:GetText() or ""
-                local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontDisable")
-
-                fs:SetText(text)
-                fs:SetWordWrap(false)
-                fs:SetFont(font, size, "OUTLINE")
-                fs:SetTextColor(unpack(color or {1, 1, 1}))
-                fs:SetWidth(fsName:GetWidth() + 2) -- offset for outline
-                fs:SetPoint("TOPLEFT", fsName, "TOPLEFT")
-                fs:SetJustifyH(fsName:GetJustifyH())
-                fs:SetJustifyV(fsName:GetJustifyV())
-
-                return fs
+                return fsName
             end
+        end
+
+        return nil
+    end
+
+    local function AddParentFrameNameComponent(frame, parentFrame, color)
+        local fsName = GetFrameNameFontString(parentFrame)
+
+        if fsName then
+            local font, size, flags = fsName:GetFont()
+            local text = fsName.GetText and fsName:GetText() or ""
+            local fs = frame:CreateFontString(nil, "ARTWORK", "GameFontDisable")
+
+            fs:SetText(text)
+            fs:SetWordWrap(false)
+            fs:SetFont(font, size, "OUTLINE")
+            fs:SetTextColor(unpack(color))
+            fs:SetWidth(fsName:GetWidth() + 2) -- offset for outline
+            fs:SetPoint("TOPLEFT", fsName, "TOPLEFT")
+            fs:SetJustifyH(fsName:GetJustifyH())
+            fs:SetJustifyV(fsName:GetJustifyV())
+
+            return fs
         end
 
         return nil
@@ -83,10 +94,10 @@ local function InitializeAuraFrame(frame, aura)
         local bar = CreateFrame("StatusBar", nil, frame)
 
         bar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
-        bar:GetStatusBarTexture():SetVertexColor(unpack(color or {1, 1, 1}))
+        bar:GetStatusBarTexture():SetVertexColor(unpack(color))
 
         bar:SetHeight(1)
-        bar:SetPoint("TOP", anchorFrame, "BOTTOM", 0, -2)
+        bar:SetPoint("TOP", anchorFrame, "BOTTOM", 0, -4)
         bar:SetPoint("LEFT", anchorFrame, "LEFT")
         bar:SetPoint("RIGHT", anchorFrame, "RIGHT")
         bar:SetFrameLevel(frame:GetFrameLevel())
@@ -102,6 +113,19 @@ local function InitializeAuraFrame(frame, aura)
         end
 
         frame:SetDurationBar(bar, options)
+
+        return bar
+    end
+
+    local function AddDurationTextComponent(frame, anchorFrame, color)
+        local duration = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        local font, size = duration:GetFont()
+
+        duration:SetFont(font, size, "OUTLINE")
+        duration:SetTextColor(unpack(color))
+        duration:SetPoint("LEFT", anchorFrame, "LEFT")
+
+        frame:SetDurationText(duration)
     end
 
     local container = frame.GetParent and frame:GetParent()
@@ -111,10 +135,13 @@ local function InitializeAuraFrame(frame, aura)
         return
     end
 
-    local fs = AddParentFrameNameComponent(frame, parent, aura.color)
+    local color = aura.color or {1, 1, 1}
+
+    local fs = AddParentFrameNameComponent(frame, parent, color)
 
     if fs then
-        AddStatusBarComponent(frame, fs, aura.color)
+        local bar = AddStatusBarComponent(frame, fs, color)
+        AddDurationTextComponent(frame, bar, color)
     end
 end
 
@@ -218,7 +245,7 @@ end
 local function RefreshAuras()
     RefreshAuraContainers()
 
-    if not unknownNameCheckRunning then
+    if shouldCheckForUnknownNames and not unknownNameCheckRunning then
         RefreshUnknownAuraContainers()
     end
 end
